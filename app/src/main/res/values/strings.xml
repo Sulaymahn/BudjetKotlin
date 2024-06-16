@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name" translatable="false">Budjet</string>
+
+    <string name="done">Done</string>
+    <string name="next">Next</string>
+
+    <string name="username_key" translatable="false">Username</string>
+    <string name="theme_key" translatable="false">Theme</string>
+    <string name="balance_visibility_key" translatable="false">BalanceVisibility</string>
+    <string name="dynamic_theme_key" translatable="false">DynamicTheme</string>
+    <string name="first_time_key" translatable="false">FirstTime</string>
+    <string name="preferred_currency_key" translatable="false">PreferredCurrency</string>
+    <string name="active_account_key" translatable="false">CurrentAccount</string>
+
+    <string name="tutorial_one_title">Track your spending</string>
+    <string name="tutorial_one_body">Know what you’re spending on each month, there’s a good chance your personal spending habits have room for improvement.</string>
+    <string name="tutorial_two_title">Analyse your transactions</string>
+    <string name="tutorial_two_body">We\'ll prepare your spending so you can instantly see what to focus on</string>
+    <string name="tutorial_three_title">Improve your lifestyle</string>
+    <string name="tutorial_three_body">We\'ll help you prepare for a better financial future!</string>
+
+    <string name="account_setup_title">Setup your account</string>
+    <string name="account_setup_username_label">Username</string>
+    <string name="account_setup_account_name_label">Account name</string>
+    <string name="account_setup_account_currency_label">Account Currency</string>
+    <string name="account_setup_account_currency_placeholder">Pick a currency</string>
+    <string name="account_setup_change_later_tip">*You can still change this later</string>
+</resources>

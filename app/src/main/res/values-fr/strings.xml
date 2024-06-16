@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tutorial_one_title">Suivez vos dépenses</string>
+    <string name="tutorial_one_body">Sachez ce que vous dépensez chaque mois, il y a de fortes chances que vos habitudes de dépenses personnelles puissent être améliorées.</string>
+    <string name="tutorial_two_title">Analysez vos transactions</string>
+    <string name="tutorial_two_body">Nous préparerons vos dépenses afin que vous puissiez voir instantanément sur quoi vous concentrer</string>
+    <string name="tutorial_three_title">Améliorez votre style de vie</string>
+    <string name="tutorial_three_body">Nous vous aiderons à préparer un meilleur avenir financier !</string>
+    <string name="account_setup_title">Configurez votre compte</string>
+    <string name="account_setup_username_label">Nom d\'utilisateur</string>
+    <string name="account_setup_account_name_label">Nom du compte</string>
+    <string name="account_setup_account_currency_label">Devise du compte</string>
+    <string name="account_setup_account_currency_placeholder">Choisissez une devise</string>
+    <string name="account_setup_change_later_tip">*Vous pourrez toujours modifier cela plus tard</string>
+    <string name="done">Complet</string>
+    <string name="next">Suivant</string>
+</resources>
