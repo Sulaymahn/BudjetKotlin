@@ -57,11 +57,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.R
-import com.unghostdude.budjet.model.Category
+import com.unghostdude.budjet.model.Account
 import com.unghostdude.budjet.model.TransactionType
 import com.unghostdude.budjet.viewmodel.CreateTransactionScreenViewModel
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -71,6 +70,7 @@ import java.time.format.FormatStyle
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTransactionScreen(
+    account: Account,
     navigateAway: () -> Unit,
     vm: CreateTransactionScreenViewModel = hiltViewModel<CreateTransactionScreenViewModel>()
 ) {
@@ -101,7 +101,10 @@ fun CreateTransactionScreen(
                     IconButton(
                         enabled = vm.canCreateTransaction(),
                         onClick = {
-                            vm.createTransaction()
+                            vm.createTransaction(
+                                account = account,
+                                onCreated = navigateAway
+                            )
                         }) {
                         Icon(
                             painter = painterResource(R.drawable.baseline_done),
@@ -223,7 +226,8 @@ fun CreateTransactionScreen(
                                         Button(
                                             onClick = {
                                                 vm.date =
-                                                    vm.date.withHour(tps.hour).withMinute(tps.minute)
+                                                    vm.date.withHour(tps.hour)
+                                                        .withMinute(tps.minute)
                                                 focusManager.clearFocus()
                                                 dialog = CreateTransactionScreenDialog.None
                                             }) {
@@ -384,6 +388,9 @@ fun CreateTransactionScreen(
                     label = {
                         Text(text = "Amount*")
                     },
+                    prefix = {
+                        Text(text = account.defaultCurrency.symbol)
+                    },
                     onValueChange = { newValue ->
                         if (newValue.isEmpty()) {
                             amountText = newValue
@@ -410,13 +417,22 @@ fun CreateTransactionScreen(
                 )
 
                 OutlinedTextField(
-                    value = "",
+                    value = vm.note.currentValue,
                     label = {
-                        Text(text = "Description")
+                        Text(text = "Note")
                     },
-                    onValueChange = {
-
+                    onValueChange = { newValue ->
+                        vm.note.setValue(newValue)
                     },
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                        }
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                 )

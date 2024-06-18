@@ -1,7 +1,10 @@
 package com.unghostdude.budjet.ui.home
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -16,12 +19,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.unghostdude.budjet.R
+import com.unghostdude.budjet.model.Account
 import com.unghostdude.budjet.ui.Screen
 import com.unghostdude.budjet.ui.transaction.TransactionScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    account: Account,
     navigateToNewTransaction: () -> Unit,
 ) {
     val navController = rememberNavController()
@@ -36,10 +41,24 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(text = currentScreen.title)
                 }
             )
+        },
+        floatingActionButton = {
+            if (currentScreen != Screen.Analytic) {
+                FloatingActionButton(onClick = {
+                    if(currentScreen == Screen.Transaction || currentScreen == Screen.Dashboard){
+                        navigateToNewTransaction()
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null
+                    )
+                }
+            }
         },
         bottomBar = {
             NavigationBar {
@@ -112,7 +131,9 @@ fun HomeScreen(
                 .padding(it)
         ) {
             composable(Screen.Dashboard.route) {
-                DashboardScreen()
+                DashboardScreen(
+                    account = account
+                )
             }
 
             composable(Screen.Analytic.route) {
@@ -120,9 +141,7 @@ fun HomeScreen(
             }
 
             composable(Screen.Transaction.route) {
-                TransactionScreen {
-                    navigateToNewTransaction()
-                }
+                TransactionScreen()
             }
 
             composable(Screen.Budget.route) {

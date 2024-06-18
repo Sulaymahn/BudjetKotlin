@@ -1,6 +1,7 @@
 package com.unghostdude.budjet.data
 
 import android.content.Context
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -24,6 +25,7 @@ class RoomTransactionRepository(private val dao: TransactionDao) :
     override suspend fun delete(transaction: Transaction) = dao.delete(transaction)
     override fun get(id: String): Flow<Transaction> = dao.get(id)
     override fun get(): Flow<List<Transaction>> = dao.get()
+    override fun getWithAccountId(accountId: String): Flow<List<Transaction>> = dao.getWithAccountId(accountId)
 }
 
 class RoomTemplateRepository(private val dao: TransactionTemplateDao) :
@@ -75,6 +77,9 @@ class RoomViewRepository(private val dao: ViewDao) :
 }
 
 class DataStoreAppSetting(private val context: Context) : AppSettingRepository {
+    override val preferences: Flow<Preferences>
+        get() = context.dataStore.data
+
     override val username: Flow<String>
         get() = context.dataStore.data.map {
             it[stringPreferencesKey(context.getString(R.string.username_key))] ?: "User"
@@ -85,7 +90,7 @@ class DataStoreAppSetting(private val context: Context) : AppSettingRepository {
         }
     override val useDynamicColor: Flow<Boolean>
         get() = context.dataStore.data.map {
-            it[booleanPreferencesKey(context.getString(R.string.dynamic_theme_key))] ?: false
+            it[booleanPreferencesKey(context.getString(R.string.dynamic_theme_key))] ?: true
         }
     override val showBalance: Flow<Boolean>
         get() = context.dataStore.data.map {
@@ -136,4 +141,5 @@ class RoomAnalyticRepository(private val dao: AnalyticDao) : AnalyticRepository 
     override fun getTotalIncome(): Flow<Int> = dao.getIncome()
     override fun getTotalExpense(): Flow<Int> = dao.getExpense()
     override fun getTotalBalance(): Flow<Int> = dao.getTotalBalance()
+    override fun getAccountBalance(accountId: String): Flow<Int> = dao.getAccountBalance(accountId)
 }

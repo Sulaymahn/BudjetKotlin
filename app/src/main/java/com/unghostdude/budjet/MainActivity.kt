@@ -13,6 +13,7 @@ import com.unghostdude.budjet.ui.MainNavigator
 import com.unghostdude.budjet.ui.theme.BudjetTheme
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -22,7 +23,6 @@ val Context.dataStore : DataStore<Preferences> by preferencesDataStore(name = "s
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
         setContent {
             BudjetTheme {
                 Surface(

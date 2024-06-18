@@ -1,6 +1,7 @@
 package com.unghostdude.budjet.data
 
 
+import androidx.datastore.preferences.core.Preferences
 import com.unghostdude.budjet.model.Account
 import com.unghostdude.budjet.model.Budget
 import com.unghostdude.budjet.model.Category
@@ -17,6 +18,7 @@ interface TransactionRepository {
     suspend fun delete(transaction: Transaction)
     fun get(id: String): Flow<Transaction?>
     fun get(): Flow<List<Transaction>>
+    fun getWithAccountId(accountId: String): Flow<List<Transaction>>
 }
 
 interface TransactionTemplateRepository {
@@ -59,7 +61,15 @@ interface ViewRepository {
     fun getTransactionDetail(transactionId: String): Flow<TransactionForDetail?>
 }
 
+interface AnalyticRepository{
+    fun getTotalIncome(): Flow<Int>
+    fun getTotalExpense(): Flow<Int>
+    fun getTotalBalance(): Flow<Int>
+    fun getAccountBalance(accountId: String): Flow<Int>
+}
+
 interface AppSettingRepository {
+    val preferences: Flow<Preferences>
     val username: Flow<String>
     val isFirstTime : Flow<Boolean>
     val useDynamicColor: Flow<Boolean>
@@ -72,8 +82,3 @@ interface AppSettingRepository {
     suspend fun setBalanceVisibility(value: Boolean)
 }
 
-interface AnalyticRepository{
-    fun getTotalIncome(): Flow<Int>
-    fun getTotalExpense(): Flow<Int>
-    fun getTotalBalance(): Flow<Int>
-}

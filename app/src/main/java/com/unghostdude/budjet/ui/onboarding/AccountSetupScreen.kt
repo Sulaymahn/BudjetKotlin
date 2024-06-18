@@ -13,6 +13,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -25,12 +26,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.R
 import com.unghostdude.budjet.model.supportedCurrencies
+import com.unghostdude.budjet.viewmodel.AccountSetupScreenState
 import com.unghostdude.budjet.viewmodel.AccountSetupScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,6 +62,13 @@ fun AccountSetupScreen(
                 focusManger.clearFocus()
             }
     ) {
+        if(vm.state == AccountSetupScreenState.Loading){
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+
         Column {
             Text(
                 text = context.getString(R.string.account_setup_title),
@@ -73,19 +83,21 @@ fun AccountSetupScreen(
             )
         }
 
-        Column {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
+        ) {
             OutlinedTextField(
                 value = vm.username.currentValue,
                 onValueChange = { newValue ->
                     vm.username.setValue(newValue)
                 },
                 label = {
-                    Text(text = context.getString(R.string.account_setup_username_label))
+                    Text(text = context.getString(R.string.account_setup_username_label) + "*")
                 },
                 isError = !vm.username.isValid,
                 supportingText = {
                     if (vm.username.errors.isNotEmpty()) {
-                        Text(text = vm.username.errors.joinToString(separator = "\n"))
+                        Text(text = vm.username.errors.first())
                     }
                 },
                 singleLine = true,
@@ -98,12 +110,12 @@ fun AccountSetupScreen(
                     vm.accountName.setValue(newValue)
                 },
                 label = {
-                    Text(text = context.getString(R.string.account_setup_account_name_label))
+                    Text(text = context.getString(R.string.account_setup_account_name_label) + "*")
                 },
                 isError = !vm.accountName.isValid,
                 supportingText = {
                     if (vm.accountName.errors.isNotEmpty()) {
-                        Text(text = vm.accountName.errors.joinToString(separator = "\n"))
+                        Text(text = vm.accountName.errors.first())
                     }
                 },
                 singleLine = true,
@@ -124,10 +136,10 @@ fun AccountSetupScreen(
                     OutlinedTextField(
                         value = vm.currency?.displayName ?: "",
                         onValueChange = {},
-                        readOnly = true,
+                        readOnly = vm.state == AccountSetupScreenState.Loading,
                         singleLine = true,
                         label = {
-                            Text(text = context.getString(R.string.account_setup_account_currency_label))
+                            Text(text = context.getString(R.string.account_setup_account_currency_label) + "*")
                         },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showCurrencyMenu) },
                         modifier = Modifier
@@ -154,8 +166,11 @@ fun AccountSetupScreen(
         }
 
         Button(
+            enabled = vm.canSetupAccount(),
             onClick = {
-                onSetupComplete()
+                vm.setupAccount(
+                    onSetupComplete
+                )
             },
             modifier = Modifier.fillMaxWidth()
         ) {

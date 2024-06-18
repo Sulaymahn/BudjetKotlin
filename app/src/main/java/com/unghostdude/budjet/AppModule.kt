@@ -7,8 +7,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase.Callback
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.unghostdude.budjet.data.AccountRepository
+import com.unghostdude.budjet.data.AnalyticRepository
+import com.unghostdude.budjet.data.AppSettingRepository
+import com.unghostdude.budjet.data.BudgetRepository
 import com.unghostdude.budjet.data.BudjetDatabase
+import com.unghostdude.budjet.data.DataStoreAppSetting
 import com.unghostdude.budjet.data.RoomAccountRepository
+import com.unghostdude.budjet.data.RoomAnalyticRepository
+import com.unghostdude.budjet.data.RoomBudgetRepository
 import com.unghostdude.budjet.data.RoomTransactionRepository
 import com.unghostdude.budjet.data.RoomViewRepository
 import com.unghostdude.budjet.data.TransactionRepository
@@ -27,6 +33,12 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
+    fun providesAppSettingRepository(@ApplicationContext context: Context): AppSettingRepository {
+        return DataStoreAppSetting(context)
+    }
+
+    @Provides
+    @Singleton
     fun providesAccountRepository(database: BudjetDatabase): AccountRepository {
         return RoomAccountRepository(database.accountDao())
     }
@@ -39,6 +51,18 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun providesAnalyticRepository(database: BudjetDatabase): AnalyticRepository {
+        return RoomAnalyticRepository(database.analyticDao())
+    }
+
+    @Provides
+    @Singleton
+    fun providesBudgetRepository(database: BudjetDatabase): BudgetRepository {
+        return RoomBudgetRepository(database.budgetDao())
+    }
+
+    @Provides
+    @Singleton
     fun providesViewRepository(database: BudjetDatabase): ViewRepository {
         return RoomViewRepository(database.viewDao())
     }
@@ -46,7 +70,6 @@ object AppModule {
     @Provides
     @Singleton
     fun providesBudjetDatabase(@ApplicationContext context: Context): BudjetDatabase {
-        Log.e("di", "providing db instance")
         return Room.databaseBuilder(context, BudjetDatabase::class.java, "budjet_db")
             .addCallback(newDatabaseCallback(context))
             .build()
@@ -69,8 +92,6 @@ object AppModule {
                             "('Health', 'medicbag', -15414114)," +
                             "('Work', 'work', -15414114)"
                 )
-
-                Log.e("db", "new db callback")
 
                 val oldDbPath = context.filesDir.absolutePath + "/.local/share/Budjet.db3"
                 if (File(oldDbPath).exists()) {

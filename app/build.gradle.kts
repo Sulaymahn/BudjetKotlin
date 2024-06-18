@@ -6,6 +6,15 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile =
+                file("C:\\Users\\sulmu\\OneDrive\\Documents\\Budjet\\sulaymahn\\sulaymahn.keystore")
+            storePassword = "Dangawa2003"
+            keyPassword = "Dangawa2003"
+            keyAlias = "Sulaymahn"
+        }
+    }
     namespace = "com.unghostdude.budjet"
     compileSdk = 34
 
@@ -13,8 +22,8 @@ android {
         applicationId = "com.unghostdude.budjet"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 6
+        versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -62,7 +71,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.sqlite.ktx)
     implementation(libs.androidx.datastore.preferences)
-    kapt("androidx.room:room-compiler:2.6.1")
+    kapt(libs.androidx.room.compiler)
 
     implementation(libs.androidx.material3.android)
 
@@ -92,4 +101,5 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+    useBuildCache = true
 }

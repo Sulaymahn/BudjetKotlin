@@ -25,11 +25,14 @@ interface TransactionDao {
     @Delete
     suspend fun delete(transaction: Transaction)
 
-    @Query("SELECT * FROM transactions WHERE id = :id")
+    @Query("SELECT * FROM transactions WHERE id = :id LIMIT 1")
     fun get(id: String): Flow<Transaction>
 
     @Query("SELECT * FROM transactions ORDER BY date DESC")
     fun get(): Flow<List<Transaction>>
+
+    @Query("SELECT * FROM transactions WHERE accountId = :accountId ORDER BY date DESC")
+    fun getWithAccountId(accountId: String): Flow<List<Transaction>>
 }
 
 @Dao
@@ -132,4 +135,7 @@ interface AnalyticDao {
 
     @Query("SELECT SUM(CASE WHEN type = 'Income' THEN amount ELSE 0 END) - SUM(CASE WHEN type = 'Expense' THEN amount ELSE 0 END) FROM transactions")
     fun getTotalBalance(): Flow<Int>
+
+    @Query("SELECT SUM(CASE WHEN type = 'Income' THEN amount ELSE 0 END) - SUM(CASE WHEN type = 'Expense' THEN amount ELSE 0 END) FROM transactions WHERE accountId = :accountId")
+    fun getAccountBalance(accountId: String): Flow<Int>
 }

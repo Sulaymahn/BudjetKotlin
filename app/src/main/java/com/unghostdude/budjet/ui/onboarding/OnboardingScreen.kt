@@ -17,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.R
+import com.unghostdude.budjet.viewmodel.OnboardingScreenViewModel
 
 data class Onboarding(
     val header: String,
@@ -27,7 +29,10 @@ data class Onboarding(
 
 
 @Composable
-fun OnboardingScreen(navigateToHome: () -> Unit) {
+fun OnboardingScreen(
+    vm: OnboardingScreenViewModel = hiltViewModel<OnboardingScreenViewModel>(),
+    navigateToHome: () -> Unit
+) {
     var currentPageIndex by remember {
         mutableIntStateOf(0)
     }
@@ -72,7 +77,7 @@ fun OnboardingScreen(navigateToHome: () -> Unit) {
             Button(
                 onClick = {
                     if (currentPageIndex == onboardings.size - 1) {
-                        navigateToHome()
+                        vm.completeSetup(navigateToHome)
                     } else {
                         currentPageIndex++
                     }
@@ -80,7 +85,11 @@ fun OnboardingScreen(navigateToHome: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text(text = if (currentPageIndex == onboardings.size - 1) context.getString(R.string.done) else context.getString(R.string.next))
+                Text(
+                    text = if (currentPageIndex == onboardings.size - 1) context.getString(R.string.done) else context.getString(
+                        R.string.next
+                    )
+                )
             }
         }
     }
