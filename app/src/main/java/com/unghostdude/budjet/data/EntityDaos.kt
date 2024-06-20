@@ -103,7 +103,7 @@ interface CategoryDao {
     @Delete
     suspend fun delete(category: Category)
 
-    @Query("SELECT * from categories WHERE id = :id")
+    @Query("SELECT * from categories WHERE category_id = :id")
     fun get(id: String): Flow<Category>
 
     @Query("SELECT * from categories ORDER BY name")
@@ -112,16 +112,16 @@ interface CategoryDao {
 
 @Dao
 interface ViewDao {
-    @Query("SELECT * from categories WHERE id = :id")
+    @Query("SELECT * from categories WHERE category_id = :id")
     fun getCategory(id: String): Category?
 
     @Query("SELECT * from categories ORDER BY name")
     fun getCategories(): Flow<List<Category>>
 
-    @Query("SELECT t.id, t.title, t.currency, t.amount, t.type, c.name categoryName, c.icon, c.color, t.date FROM transactions t LEFT OUTER JOIN categories c ON t.categoryId = c.id ORDER BY date DESC")
+    @Query("SELECT t.id, t.title, t.currency, t.amount, t.type, t.name categoryName, t.icon, t.color, t.date FROM transactions t ORDER BY date DESC")
     fun getTransactionCard(): Flow<List<TransactionForCard>>
 
-    @Query("SELECT t.title, t.currency, t.amount, t.type, c.name categoryName, t.note, t.date FROM transactions t LEFT OUTER JOIN categories c ON t.categoryId = c.id WHERE t.id = :transactionId")
+    @Query("SELECT t.title, t.currency, t.amount, t.type, t.name categoryName, t.note, t.date FROM transactions t WHERE t.id = :transactionId")
     fun getTransactionDetail(transactionId: String): Flow<TransactionForDetail?>
 }
 

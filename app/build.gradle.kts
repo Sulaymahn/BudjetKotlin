@@ -1,3 +1,5 @@
+import com.android.apksig.internal.util.AndroidSdkVersion
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -16,12 +18,12 @@ android {
         }
     }
     namespace = "com.unghostdude.budjet"
-    compileSdk = 34
+    compileSdk = AndroidSdkVersion.U
 
     defaultConfig {
         applicationId = "com.unghostdude.budjet"
-        minSdk = 26
-        targetSdk = 34
+        minSdk = AndroidSdkVersion.R
+        targetSdk = AndroidSdkVersion.U
         versionCode = 6
         versionName = "2.0.0"
 

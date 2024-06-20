@@ -1,6 +1,7 @@
 package com.unghostdude.budjet.model
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.Instant
@@ -22,8 +23,9 @@ data class Transaction(
     val amount: Double,
     val title: String?,
     val note: String?,
-    @ColumnInfo(index = true)
-    val categoryId: Int,
+    //@ColumnInfo(index = true)
+    @Embedded
+    val category: Category,
     val labels: List<String>,
     @ColumnInfo(index = true)
     val date: Instant,

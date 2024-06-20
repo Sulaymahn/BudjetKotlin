@@ -77,9 +77,6 @@ class RoomViewRepository(private val dao: ViewDao) :
 }
 
 class DataStoreAppSetting(private val context: Context) : AppSettingRepository {
-    override val preferences: Flow<Preferences>
-        get() = context.dataStore.data
-
     override val username: Flow<String>
         get() = context.dataStore.data.map {
             it[stringPreferencesKey(context.getString(R.string.username_key))] ?: "User"

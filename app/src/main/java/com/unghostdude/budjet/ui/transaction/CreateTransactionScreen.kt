@@ -1,5 +1,9 @@
 package com.unghostdude.budjet.ui.transaction
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,9 +39,11 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +66,7 @@ import com.unghostdude.budjet.R
 import com.unghostdude.budjet.model.Account
 import com.unghostdude.budjet.model.TransactionType
 import com.unghostdude.budjet.viewmodel.CreateTransactionScreenViewModel
+import kotlinx.coroutines.flow.first
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -82,6 +89,9 @@ fun CreateTransactionScreen(
 
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
 
     Scaffold(
         topBar = {
@@ -113,12 +123,17 @@ fun CreateTransactionScreen(
                     }
                 }
             )
-        }
+        },
+        modifier = Modifier
+            .clickable(interactionSource = interactionSource, indication = null) {
+                focusManager.clearFocus()
+            }
     ) {
         Box(
             modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
+
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -156,7 +171,7 @@ fun CreateTransactionScreen(
 
                 //
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
                 ) {
                     OutlinedTextField(
@@ -322,99 +337,102 @@ fun CreateTransactionScreen(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
-                    supportingText = {
-                        if (vm.title.errors.isNotEmpty()) {
-                            Text(text = vm.title.errors.joinToString(separator = "\n"))
-                        }
-                    },
                     isError = !vm.title.isValid,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    ExposedDropdownMenuBox(
-                        expanded = dialog == CreateTransactionScreenDialog.Category,
-                        onExpandedChange = {
-                            dialog =
-                                if (dialog != CreateTransactionScreenDialog.Category) CreateTransactionScreenDialog.Category
-                                else CreateTransactionScreenDialog.None
-                        }
-                    ) {
-                        OutlinedTextField(
-                            value = vm.category?.name ?: "",
-                            onValueChange = {},
-                            readOnly = true,
-                            singleLine = true,
-                            label = {
-                                Text(text = "Category*")
-                            },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = dialog == CreateTransactionScreenDialog.Category)
-                            },
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth()
-                        )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ){
+                    var amountText by remember {
+                        mutableStateOf("")
+                    }
 
-                        ExposedDropdownMenu(
+                    OutlinedTextField(
+                        value = amountText,
+                        label = {
+                            Text(text = "Amount*")
+                        },
+                        prefix = {
+                            Text(text = account.defaultCurrency.symbol)
+                        },
+                        singleLine = true,
+                        onValueChange = { newValue ->
+                            if (newValue.isEmpty()) {
+                                amountText = newValue
+                                vm.amount = null
+                            } else if (!newValue.startsWith("0") && newValue.isDigitsOnly() && newValue.length <= 16) {
+                                val num = newValue.toDoubleOrNull()
+                                if (num != null) {
+                                    amountText = newValue
+                                    vm.amount = num
+                                }
+                            }
+                        },
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Right)
+                            }
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.NumberPassword,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ) {
+                        ExposedDropdownMenuBox(
                             expanded = dialog == CreateTransactionScreenDialog.Category,
-                            onDismissRequest = {
-                                dialog = CreateTransactionScreenDialog.None
+                            onExpandedChange = {
+                                dialog =
+                                    if (dialog != CreateTransactionScreenDialog.Category) CreateTransactionScreenDialog.Category
+                                    else CreateTransactionScreenDialog.None
                             }
                         ) {
-                            categories.forEach { item ->
-                                DropdownMenuItem(
-                                    text = { Text(text = item.name) },
-                                    onClick = {
-                                        vm.category = item
-                                        dialog = CreateTransactionScreenDialog.None
-                                        focusManager.moveFocus(FocusDirection.Down)
-                                    }
-                                )
+                            OutlinedTextField(
+                                value = vm.category?.name ?: "",
+                                onValueChange = {},
+                                readOnly = true,
+                                singleLine = true,
+                                label = {
+                                    Text(text = "Category*")
+                                },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = dialog == CreateTransactionScreenDialog.Category)
+                                },
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth()
+                            )
+
+                            ExposedDropdownMenu(
+                                expanded = dialog == CreateTransactionScreenDialog.Category,
+                                onDismissRequest = {
+                                    dialog = CreateTransactionScreenDialog.None
+                                }
+                            ) {
+                                categories.forEach { item ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = item.name) },
+                                        onClick = {
+                                            vm.category = item
+                                            dialog = CreateTransactionScreenDialog.None
+                                            focusManager.moveFocus(FocusDirection.Down)
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
                 }
 
-                var amountText by remember {
-                    mutableStateOf("")
-                }
-
-                OutlinedTextField(
-                    value = amountText,
-                    label = {
-                        Text(text = "Amount*")
-                    },
-                    prefix = {
-                        Text(text = account.defaultCurrency.symbol)
-                    },
-                    onValueChange = { newValue ->
-                        if (newValue.isEmpty()) {
-                            amountText = newValue
-                            vm.amount = null
-                        } else if (!newValue.startsWith("0") && newValue.isDigitsOnly() && newValue.length <= 16) {
-                            val num = newValue.toDoubleOrNull()
-                            if (num != null) {
-                                amountText = newValue
-                                vm.amount = num
-                            }
-                        }
-                    },
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            focusManager.moveFocus(FocusDirection.Down)
-                        }
-                    ),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.NumberPassword,
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
 
                 OutlinedTextField(
                     value = vm.note.currentValue,
@@ -436,6 +454,8 @@ fun CreateTransactionScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 )
+                
+                Spacer(modifier = Modifier.height(200.dp))
             }
         }
     }

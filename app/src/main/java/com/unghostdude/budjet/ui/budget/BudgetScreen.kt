@@ -1,4 +1,4 @@
-package com.unghostdude.budjet.ui.home
+package com.unghostdude.budjet.ui.budget
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.unghostdude.budjet.data.BudgetRepository
 import com.unghostdude.budjet.viewmodel.BudgetScreenViewModel
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

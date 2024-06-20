@@ -69,7 +69,6 @@ interface AnalyticRepository{
 }
 
 interface AppSettingRepository {
-    val preferences: Flow<Preferences>
     val username: Flow<String>
     val isFirstTime : Flow<Boolean>
     val useDynamicColor: Flow<Boolean>

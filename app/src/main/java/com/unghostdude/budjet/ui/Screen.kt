@@ -10,8 +10,10 @@ sealed class Screen(
     data object Analytic : Screen("analytics", "Analytics")
     data object Settings : Screen("settings", "Settings")
     data object Transaction : Screen("transaction", "Transactions")
+    data object TransactionDetail : Screen("transaction/{id}", "Transactions")
+    data object NewTransaction : Screen("new_transaction", "Transaction")
+    data object NewBudget : Screen("new_budget", "Budget")
     data object Template : Screen("template", "Templates")
     data object Budget : Screen("budget", "Budgets")
     data object AccountSetup : Screen("account_setup", "Account Setup")
-    data object NewTransaction : Screen("new_transaction", "Transaction")
 }

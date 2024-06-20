@@ -7,13 +7,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.unghostdude.budjet.ui.budget.CreateBudgetScreen
 import com.unghostdude.budjet.ui.home.HomeScreen
 import com.unghostdude.budjet.ui.onboarding.AccountSetupScreen
 import com.unghostdude.budjet.ui.onboarding.OnboardingScreen
+import com.unghostdude.budjet.ui.setting.SettingScreen
 import com.unghostdude.budjet.ui.transaction.CreateTransactionScreen
+import com.unghostdude.budjet.ui.transaction.TransactionDetailScreen
+import com.unghostdude.budjet.ui.transaction.TransactionScreen
 import com.unghostdude.budjet.viewmodel.MainNavigatorState
 import com.unghostdude.budjet.viewmodel.MainNavigatorViewModel
 
@@ -23,8 +30,6 @@ fun MainNavigator(
 ) {
     val navController = rememberNavController()
     val state by vm.preference.collectAsState()
-    val accounts by vm.accounts.collectAsState()
-
 
     if (state == MainNavigatorState.Loading) {
         Box(contentAlignment = Alignment.Center) {
@@ -53,8 +58,18 @@ fun MainNavigator(
                 } else {
                     HomeScreen(
                         account = preference.account,
+                        username = preference.username,
+                        navigateToSettings = {
+                            navController.navigate(Screen.Settings.route)
+                        },
+                        navigateToTransactionDetail = { id ->
+                            navController.navigate(Screen.Transaction.route + "/" + id)
+                        },
                         navigateToNewTransaction = {
                             navController.navigate(Screen.NewTransaction.route)
+                        },
+                        navigateToNewBudget = {
+                            navController.navigate(Screen.NewBudget.route)
                         }
                     )
                 }
@@ -83,6 +98,44 @@ fun MainNavigator(
             composable(Screen.NewTransaction.route) {
                 if (preference.account != null) {
                     CreateTransactionScreen(
+                        account = preference.account,
+                        navigateAway = {
+                            navController.navigateUp()
+                        }
+                    )
+                } else {
+                    navController.navigate(Screen.AccountSetup.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
+
+            composable(Screen.Settings.route) {
+                SettingScreen(
+                    navigateAway = {
+                        navController.navigateUp()
+                    }
+                )
+            }
+
+            composable(
+                Screen.TransactionDetail.route,
+                arguments = listOf(navArgument("id") {
+                    type = NavType.StringType
+                })
+            ) {
+                val id = navController.currentBackStackEntry?.arguments?.getString("id")
+                TransactionDetailScreen(
+                    transactionId = id ?: "",
+                    navigatorAway = { navController.navigateUp() }
+                )
+            }
+
+            composable(Screen.NewBudget.route) {
+                if (preference.account != null) {
+                    CreateBudgetScreen(
                         account = preference.account,
                         navigateAway = {
                             navController.navigateUp()

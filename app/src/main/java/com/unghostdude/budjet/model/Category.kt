@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity("categories")
 data class Category(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(index = true)
+    @ColumnInfo(name = "category_id", index = true)
     val id: Int = 0,
     val name: String,
     val icon: String,

@@ -48,7 +48,7 @@ class CreateTransactionScreenViewModel @Inject constructor(
         initialValue = listOf()
     )
 
-    val title = FormControl(validators = listOf(Validators.Required(), Validators.MaxLength(64)))
+    val title = FormControl(validators = listOf(Validators.MaxLength(64)))
     var category by mutableStateOf<Category?>(null)
     var transactionType by mutableStateOf(TransactionType.Expense)
     var date by mutableStateOf<LocalDateTime>(LocalDateTime.now())
@@ -67,7 +67,7 @@ class CreateTransactionScreenViewModel @Inject constructor(
                 type = transactionType,
                 amount = amount!!,
                 date = date.toInstant(ZoneOffset.UTC),
-                categoryId = category!!.id,
+                category = category!!,
                 lastModified = LocalDateTime.now().toInstant(ZoneOffset.UTC),
                 labels = listOf(),
                 title = title.currentValue.ifBlank { null },
