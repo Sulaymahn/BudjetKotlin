@@ -1,5 +1,6 @@
 package com.unghostdude.budjet.ui.budget
 
+import android.icu.number.NumberFormatter
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.viewmodel.BudgetScreenViewModel
@@ -24,7 +26,10 @@ fun BudgetScreen(
     vm: BudgetScreenViewModel = hiltViewModel<BudgetScreenViewModel>()
 ) {
     val budgets by vm.budgets.collectAsState(listOf())
-    val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault())
+    val formatter =
+        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault())
+    val numberFormatter =
+        NumberFormatter.withLocale(LocalContext.current.resources.configuration.locales[0])
 
     LazyColumn(
         userScrollEnabled = true
@@ -32,13 +37,19 @@ fun BudgetScreen(
         items(items = budgets) { budget ->
             ListItem(
                 headlineContent = {
-                    Text(text = budget.name)
+                    Text(text = budget.budget.name)
                 },
                 supportingContent = {
-                    Text(text = budget.recurrence.toString())
+                    Text(text = budget.budget.recurrence.toString())
                 },
                 trailingContent = {
-                    Text(text = "${budget.amount}")
+                    Text(
+                        text = "${budget.account.defaultCurrency.symbol} ${
+                            numberFormatter.format(
+                                budget.budget.amount
+                            )
+                        }"
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -48,7 +59,7 @@ fun BudgetScreen(
             )
         }
 
-        item{
+        item {
             Spacer(modifier = Modifier.height(64.dp))
         }
     }

@@ -1,31 +1,31 @@
 package com.unghostdude.budjet.data
 
 import android.content.Context
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.unghostdude.budjet.R
 import com.unghostdude.budjet.dataStore
-import com.unghostdude.budjet.model.Account
-import com.unghostdude.budjet.model.Budget
-import com.unghostdude.budjet.model.Category
-import com.unghostdude.budjet.model.Transaction
-import com.unghostdude.budjet.model.TransactionForCard
-import com.unghostdude.budjet.model.TransactionForDetail
+import com.unghostdude.budjet.model.AccountEntity
+import com.unghostdude.budjet.model.BudgetEntity
+import com.unghostdude.budjet.model.BudgetCategoryEntity
+import com.unghostdude.budjet.model.BudgetWithAccountAndCategories
+import com.unghostdude.budjet.model.CategoryEntity
+import com.unghostdude.budjet.model.TransactionEntity
 import com.unghostdude.budjet.model.TransactionTemplate
+import com.unghostdude.budjet.model.TransactionWithAccountAndCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.UUID
 
 class RoomTransactionRepository(private val dao: TransactionDao) :
     TransactionRepository {
-    override suspend fun insert(transaction: Transaction) = dao.insert(transaction)
-    override suspend fun update(transaction: Transaction) = dao.update(transaction)
-    override suspend fun delete(transaction: Transaction) = dao.delete(transaction)
-    override fun get(id: String): Flow<Transaction> = dao.get(id)
-    override fun get(): Flow<List<Transaction>> = dao.get()
-    override fun getWithAccountId(accountId: String): Flow<List<Transaction>> = dao.getWithAccountId(accountId)
+    override suspend fun insert(transaction: TransactionEntity) = dao.insert(transaction)
+    override suspend fun update(transaction: TransactionEntity) = dao.update(transaction)
+    override suspend fun delete(transaction: TransactionEntity) = dao.delete(transaction)
+    override fun get(id: String): Flow<TransactionWithAccountAndCategory> = dao.get(id)
+    override fun get(): Flow<List<TransactionWithAccountAndCategory>> = dao.get()
+    override fun getWithAccountId(accountId: String): Flow<List<TransactionWithAccountAndCategory>> = dao.getWithAccountId(accountId)
 }
 
 class RoomTemplateRepository(private val dao: TransactionTemplateDao) :
@@ -39,41 +39,40 @@ class RoomTemplateRepository(private val dao: TransactionTemplateDao) :
 
 class RoomAccountRepository(private val dao: AccountDao) :
     AccountRepository {
-    override suspend fun insert(account: Account) = dao.insert(account)
-    override suspend fun update(account: Account) = dao.update(account)
-    override suspend fun delete(account: Account) = dao.delete(account)
-    override fun get(id: String): Flow<Account> = dao.get(id)
-    override fun get(): Flow<List<Account>> = dao.get()
-    override fun getFirst(): Flow<Account?> = dao.getFirst()
+    override suspend fun insert(account: AccountEntity) = dao.insert(account)
+    override suspend fun update(account: AccountEntity) = dao.update(account)
+    override suspend fun delete(account: AccountEntity) = dao.delete(account)
+    override fun get(id: String): Flow<AccountEntity> = dao.get(id)
+    override fun get(): Flow<List<AccountEntity>> = dao.get()
+    override fun getFirst(): Flow<AccountEntity?> = dao.getFirst()
 }
 
 class RoomBudgetRepository(private val dao: BudgetDao) :
     BudgetRepository {
-    override suspend fun insert(budget: Budget) = dao.insert(budget)
-    override suspend fun update(budget: Budget) = dao.update(budget)
-    override suspend fun delete(budget: Budget) = dao.delete(budget)
-    override fun get(id: String): Flow<Budget> = dao.get(id)
-    override fun get(): Flow<List<Budget>> = dao.get()
+    override suspend fun insert(budget: BudgetEntity) = dao.insert(budget)
+    override suspend fun insert(items: List<BudgetCategoryEntity>) = dao.insert(items)
+    override suspend fun insert(budget: BudgetEntity, items: List<CategoryEntity>) = dao.insert(budget, items)
+    override suspend fun update(budget: BudgetEntity) = dao.update(budget)
+    override suspend fun delete(budget: BudgetEntity) = dao.delete(budget)
+    override fun get(id: String): Flow<BudgetWithAccountAndCategories> = dao.get(id)
+    override fun get(): Flow<List<BudgetWithAccountAndCategories>> = dao.get()
+    override fun getWithAccountId(id: String): Flow<List<BudgetWithAccountAndCategories>> = dao.getWithAccountId(id)
 }
 
 class RoomCategoryRepository(private val dao: CategoryDao) :
     CategoryRepository {
-    override suspend fun insert(category: Category) = dao.insert(category)
-    override suspend fun update(category: Category) = dao.update(category)
-    override suspend fun delete(category: Category) = dao.delete(category)
-    override fun get(id: String): Flow<Category> = dao.get(id)
-    override fun get(): Flow<List<Category>> = dao.get()
+    override suspend fun insert(category: CategoryEntity) = dao.insert(category)
+    override suspend fun update(category: CategoryEntity) = dao.update(category)
+    override suspend fun delete(category: CategoryEntity) = dao.delete(category)
+    override fun get(id: String): Flow<CategoryEntity> = dao.get(id)
+    override fun get(): Flow<List<CategoryEntity>> = dao.get()
 }
 
-class RoomViewRepository(private val dao: ViewDao) :
-    ViewRepository {
-    override fun getCategory(id: String): Category? = dao.getCategory(id)
-
-    override fun getCategories(): Flow<List<Category>> = dao.getCategories()
-
-    override fun getTransactionCard(): Flow<List<TransactionForCard>> = dao.getTransactionCard()
-    override fun getTransactionDetail(transactionId: String): Flow<TransactionForDetail?> =
-        dao.getTransactionDetail(transactionId)
+class RoomAnalyticRepository(private val dao: AnalyticDao) : AnalyticRepository {
+    override fun getTotalIncome(): Flow<Int> = dao.getIncome()
+    override fun getTotalExpense(): Flow<Int> = dao.getExpense()
+    override fun getTotalBalance(): Flow<Int> = dao.getTotalBalance()
+    override fun getAccountBalance(accountId: String): Flow<Int> = dao.getAccountBalance(accountId)
 }
 
 class DataStoreAppSetting(private val context: Context) : AppSettingRepository {
@@ -134,9 +133,3 @@ class DataStoreAppSetting(private val context: Context) : AppSettingRepository {
     }
 }
 
-class RoomAnalyticRepository(private val dao: AnalyticDao) : AnalyticRepository {
-    override fun getTotalIncome(): Flow<Int> = dao.getIncome()
-    override fun getTotalExpense(): Flow<Int> = dao.getExpense()
-    override fun getTotalBalance(): Flow<Int> = dao.getTotalBalance()
-    override fun getAccountBalance(accountId: String): Flow<Int> = dao.getAccountBalance(accountId)
-}

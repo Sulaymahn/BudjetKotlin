@@ -1,9 +1,7 @@
 package com.unghostdude.budjet.ui.transaction
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,11 +37,9 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,10 +59,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.R
-import com.unghostdude.budjet.model.Account
+import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.model.TransactionType
 import com.unghostdude.budjet.viewmodel.CreateTransactionScreenViewModel
-import kotlinx.coroutines.flow.first
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -77,7 +72,7 @@ import java.time.format.FormatStyle
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTransactionScreen(
-    account: Account,
+    account: AccountEntity,
     navigateAway: () -> Unit,
     vm: CreateTransactionScreenViewModel = hiltViewModel<CreateTransactionScreenViewModel>()
 ) {
@@ -133,7 +128,6 @@ fun CreateTransactionScreen(
             modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
-
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),

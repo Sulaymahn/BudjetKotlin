@@ -97,7 +97,7 @@ fun TransactionDetailScreen(
                             fontWeight = FontWeight.Light
                         )
                         Text(
-                            text = "${transaction?.title}"
+                            text = "${transaction?.transaction?.title}"
                         )
                     }
 
@@ -124,10 +124,10 @@ fun TransactionDetailScreen(
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                text = transaction?.type.toString()
+                                text = transaction?.transaction?.type.toString()
                             )
                             Text(
-                                text = currencyFormatter.format(transaction?.amount)
+                                text = currencyFormatter.format(transaction?.transaction?.amount)
                             )
                         }
                     }
@@ -158,7 +158,7 @@ fun TransactionDetailScreen(
                                 text = transaction?.category?.name ?: ""
                             )
                             Text(
-                                text = timeFormatter.format(transaction?.date)
+                                text = timeFormatter.format(transaction?.transaction?.date)
                             )
                         }
                     }
@@ -181,7 +181,7 @@ fun TransactionDetailScreen(
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                text = transaction?.currency?.displayName ?: ""
+                                text = transaction?.transaction?.currency?.displayName ?: ""
                             )
                         }
                     }
@@ -204,7 +204,7 @@ fun TransactionDetailScreen(
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                text = transaction?.note ?: ""
+                                text = transaction?.transaction?.note ?: ""
                             )
                         }
                     }
@@ -214,7 +214,7 @@ fun TransactionDetailScreen(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                 ) {
-                    Text(text = dateFormatter.format(transaction?.date))
+                    Text(text = dateFormatter.format(transaction?.transaction?.date))
                 }
             }
         }

@@ -1,24 +1,24 @@
 package com.unghostdude.budjet.data
 
 
-import androidx.datastore.preferences.core.Preferences
-import com.unghostdude.budjet.model.Account
-import com.unghostdude.budjet.model.Budget
-import com.unghostdude.budjet.model.Category
-import com.unghostdude.budjet.model.Transaction
-import com.unghostdude.budjet.model.TransactionForCard
-import com.unghostdude.budjet.model.TransactionForDetail
+import com.unghostdude.budjet.model.AccountEntity
+import com.unghostdude.budjet.model.BudgetEntity
+import com.unghostdude.budjet.model.BudgetCategoryEntity
+import com.unghostdude.budjet.model.BudgetWithAccountAndCategories
+import com.unghostdude.budjet.model.CategoryEntity
+import com.unghostdude.budjet.model.TransactionEntity
 import com.unghostdude.budjet.model.TransactionTemplate
+import com.unghostdude.budjet.model.TransactionWithAccountAndCategory
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 interface TransactionRepository {
-    suspend fun insert(transaction: Transaction)
-    suspend fun update(transaction: Transaction)
-    suspend fun delete(transaction: Transaction)
-    fun get(id: String): Flow<Transaction?>
-    fun get(): Flow<List<Transaction>>
-    fun getWithAccountId(accountId: String): Flow<List<Transaction>>
+    suspend fun insert(transaction: TransactionEntity)
+    suspend fun update(transaction: TransactionEntity)
+    suspend fun delete(transaction: TransactionEntity)
+    fun get(id: String): Flow<TransactionWithAccountAndCategory?>
+    fun get(): Flow<List<TransactionWithAccountAndCategory>>
+    fun getWithAccountId(accountId: String): Flow<List<TransactionWithAccountAndCategory>>
 }
 
 interface TransactionTemplateRepository {
@@ -30,35 +30,31 @@ interface TransactionTemplateRepository {
 }
 
 interface BudgetRepository {
-    suspend fun insert(budget: Budget)
-    suspend fun update(budget: Budget)
-    suspend fun delete(budget: Budget)
-    fun get(id: String): Flow<Budget?>
-    fun get(): Flow<List<Budget>>
+    suspend fun insert(budget: BudgetEntity)
+    suspend fun insert(items: List<BudgetCategoryEntity>)
+    suspend fun insert(budget: BudgetEntity, items: List<CategoryEntity>)
+    suspend fun update(budget: BudgetEntity)
+    suspend fun delete(budget: BudgetEntity)
+    fun get(id: String): Flow<BudgetWithAccountAndCategories?>
+    fun get(): Flow<List<BudgetWithAccountAndCategories>>
+    fun getWithAccountId(id: String): Flow<List<BudgetWithAccountAndCategories>>
 }
 
 interface AccountRepository {
-    suspend fun insert(account: Account)
-    suspend fun update(account: Account)
-    suspend fun delete(account: Account)
-    fun get(id: String): Flow<Account?>
-    fun get(): Flow<List<Account>>
-    fun getFirst(): Flow<Account?>
+    suspend fun insert(account: AccountEntity)
+    suspend fun update(account: AccountEntity)
+    suspend fun delete(account: AccountEntity)
+    fun get(id: String): Flow<AccountEntity?>
+    fun get(): Flow<List<AccountEntity>>
+    fun getFirst(): Flow<AccountEntity?>
 }
 
 interface CategoryRepository {
-    suspend fun insert(category: Category)
-    suspend fun update(category: Category)
-    suspend fun delete(category: Category)
-    fun get(id: String): Flow<Category?>
-    fun get(): Flow<List<Category>>
-}
-
-interface ViewRepository {
-    fun getCategory(id: String): Category?
-    fun getCategories(): Flow<List<Category>>
-    fun getTransactionCard(): Flow<List<TransactionForCard>>
-    fun getTransactionDetail(transactionId: String): Flow<TransactionForDetail?>
+    suspend fun insert(category: CategoryEntity)
+    suspend fun update(category: CategoryEntity)
+    suspend fun delete(category: CategoryEntity)
+    fun get(id: String): Flow<CategoryEntity?>
+    fun get(): Flow<List<CategoryEntity>>
 }
 
 interface AnalyticRepository{

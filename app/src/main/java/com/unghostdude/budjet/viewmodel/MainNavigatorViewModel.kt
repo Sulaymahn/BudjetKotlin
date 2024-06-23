@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unghostdude.budjet.data.AccountRepository
 import com.unghostdude.budjet.data.AppSettingRepository
-import com.unghostdude.budjet.model.Account
+import com.unghostdude.budjet.model.AccountEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -13,8 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainNavigatorViewModel @Inject constructor(
-    private val accountRepo: AccountRepository,
-    private val userRepo: AppSettingRepository
+    accountRepo: AccountRepository,
+    userRepo: AppSettingRepository
 ) : ViewModel() {
     val preference = combine(
         userRepo.activeAccount,
@@ -37,18 +37,12 @@ class MainNavigatorViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5000L),
         MainNavigatorState.Loading
     )
-
-    val accounts = accountRepo.get().stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000L),
-        listOf()
-    )
 }
 
 sealed class MainNavigatorState {
     data object Loading : MainNavigatorState()
     data class Idle(
-        val account: Account?,
+        val account: AccountEntity?,
         val username: String,
         val isFirstTime: Boolean,
         val showBalance: Boolean

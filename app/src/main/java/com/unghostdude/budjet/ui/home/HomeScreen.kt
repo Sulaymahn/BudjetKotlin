@@ -1,5 +1,6 @@
 package com.unghostdude.budjet.ui.home
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -33,15 +34,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.unghostdude.budjet.BuildConfig
 import com.unghostdude.budjet.R
-import com.unghostdude.budjet.model.Account
+import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.ui.Screen
 import com.unghostdude.budjet.ui.budget.BudgetScreen
 import com.unghostdude.budjet.ui.transaction.TransactionScreen
@@ -50,7 +54,7 @@ import com.unghostdude.budjet.viewmodel.HomeScreenViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    account: Account,
+    account: AccountEntity,
     username: String,
     vm: HomeScreenViewModel = hiltViewModel<HomeScreenViewModel>(),
     navigateToSettings: () -> Unit,
@@ -61,6 +65,7 @@ fun HomeScreen(
     val navController = rememberNavController()
     val navState = navController.currentBackStackEntryAsState()
     val accounts by vm.accounts.collectAsState()
+    val context = LocalContext.current
     val currentScreen = when (navState.value?.destination?.route) {
         Screen.Budget.route -> Screen.Budget
         Screen.Transaction.route -> Screen.Transaction
@@ -115,6 +120,22 @@ fun HomeScreen(
                                         Text(text = "Export as csv")
                                     },
                                     onClick = {
+                                        vm.exportToCsv(
+                                            baseDirectory = context.filesDir.absolutePath,
+                                            callback = { path, file ->
+                                                val uri = FileProvider.getUriForFile(
+                                                    context,
+                                                    BuildConfig.APPLICATION_ID + ".fileprovider",
+                                                    file
+                                                )
+                                                val intent = Intent(Intent.ACTION_SEND)
+                                                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                                intent.setType("text/csv")
+                                                intent.putExtra(Intent.EXTRA_STREAM, uri)
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                context.startActivity(Intent.createChooser(intent, "Share file"))
+                                            }
+                                        )
                                         showMenu = false
                                     }
                                 )

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unghostdude.budjet.data.AccountRepository
 import com.unghostdude.budjet.data.AppSettingRepository
-import com.unghostdude.budjet.model.Account
+import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.utilities.FormControl
 import com.unghostdude.budjet.utilities.Validators
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,7 +39,7 @@ class AccountSetupScreenViewModel @Inject constructor(
     fun setupAccount(onCompleted: () -> Unit = {}) {
         viewModelScope.launch {
             state = AccountSetupScreenState.Loading
-            val account = Account(
+            val account = AccountEntity(
                 id = UUID.randomUUID(),
                 name = accountName.currentValue,
                 startAmount = 0.0,

@@ -5,9 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity("categories")
-data class Category(
+data class CategoryEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "category_id", index = true)
+    @ColumnInfo(index = true)
     val id: Int = 0,
     val name: String,
     val icon: String,

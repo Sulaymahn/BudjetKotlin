@@ -5,73 +5,95 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.unghostdude.budjet.model.Account
-import com.unghostdude.budjet.model.Budget
-import com.unghostdude.budjet.model.Category
-import com.unghostdude.budjet.model.Transaction
-import com.unghostdude.budjet.model.TransactionForCard
-import com.unghostdude.budjet.model.TransactionForDetail
+import com.unghostdude.budjet.model.AccountEntity
+import com.unghostdude.budjet.model.BudgetEntity
+import com.unghostdude.budjet.model.BudgetCategoryEntity
+import com.unghostdude.budjet.model.BudgetWithAccountAndCategories
+import com.unghostdude.budjet.model.CategoryEntity
+import com.unghostdude.budjet.model.TransactionEntity
 import com.unghostdude.budjet.model.TransactionTemplate
+import com.unghostdude.budjet.model.TransactionWithAccountAndCategory
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TransactionDao {
     @Insert
-    suspend fun insert(transaction: Transaction)
+    suspend fun insert(transaction: TransactionEntity)
 
     @Update
-    suspend fun update(transaction: Transaction)
+    suspend fun update(transaction: TransactionEntity)
 
     @Delete
-    suspend fun delete(transaction: Transaction)
+    suspend fun delete(transaction: TransactionEntity)
 
     @Query("SELECT * FROM transactions WHERE id = :id LIMIT 1")
-    fun get(id: String): Flow<Transaction>
+    fun get(id: String): Flow<TransactionWithAccountAndCategory>
 
     @Query("SELECT * FROM transactions ORDER BY date DESC")
-    fun get(): Flow<List<Transaction>>
+    fun get(): Flow<List<TransactionWithAccountAndCategory>>
 
     @Query("SELECT * FROM transactions WHERE accountId = :accountId ORDER BY date DESC")
-    fun getWithAccountId(accountId: String): Flow<List<Transaction>>
+    fun getWithAccountId(accountId: String): Flow<List<TransactionWithAccountAndCategory>>
 }
 
 @Dao
 interface BudgetDao {
     @Insert
-    suspend fun insert(budget: Budget)
+    suspend fun insert(budget: BudgetEntity)
+
+    @Insert
+    suspend fun insert(items: List<BudgetCategoryEntity>)
+
+    @androidx.room.Transaction
+    suspend fun insert(budget: BudgetEntity, items: List<CategoryEntity>) {
+        insert(budget)
+        val i = items.map { item ->
+            BudgetCategoryEntity(
+                budgetId = budget.id,
+                categoryId = item.id
+            )
+        }
+        insert(i)
+    }
 
     @Update
-    suspend fun update(budget: Budget)
+    suspend fun update(budget: BudgetEntity)
 
     @Delete
-    suspend fun delete(budget: Budget)
+    suspend fun delete(budget: BudgetEntity)
 
+    @androidx.room.Transaction
     @Query("SELECT * from budgets WHERE id = :id")
-    fun get(id: String): Flow<Budget>
+    fun get(id: String): Flow<BudgetWithAccountAndCategories>
 
+    @androidx.room.Transaction
     @Query("SELECT * from budgets ORDER BY name")
-    fun get(): Flow<List<Budget>>
+    fun get(): Flow<List<BudgetWithAccountAndCategories>>
+
+    @androidx.room.Transaction
+    @Query("SELECT * from budgets WHERE accountId = :accountId ORDER BY name")
+    fun getWithAccountId(accountId: String): Flow<List<BudgetWithAccountAndCategories>>
 }
 
 @Dao
 interface AccountDao {
     @Insert
-    suspend fun insert(account: Account)
+    suspend fun insert(account: AccountEntity)
 
     @Update
-    suspend fun update(account: Account)
+    suspend fun update(account: AccountEntity)
 
     @Delete
-    suspend fun delete(account: Account)
+    suspend fun delete(account: AccountEntity)
 
     @Query("SELECT * from accounts WHERE id = :id")
-    fun get(id: String): Flow<Account>
+    fun get(id: String): Flow<AccountEntity>
 
     @Query("SELECT * from accounts ORDER BY name")
-    fun get(): Flow<List<Account>>
+    fun get(): Flow<List<AccountEntity>>
 
     @Query("SELECT * from accounts LIMIT 1")
-    fun getFirst(): Flow<Account?>
+    fun getFirst(): Flow<AccountEntity?>
 }
 
 @Dao
@@ -95,34 +117,19 @@ interface TransactionTemplateDao {
 @Dao
 interface CategoryDao {
     @Insert
-    suspend fun insert(category: Category)
+    suspend fun insert(category: CategoryEntity)
 
     @Update
-    suspend fun update(category: Category)
+    suspend fun update(category: CategoryEntity)
 
     @Delete
-    suspend fun delete(category: Category)
+    suspend fun delete(category: CategoryEntity)
 
-    @Query("SELECT * from categories WHERE category_id = :id")
-    fun get(id: String): Flow<Category>
-
-    @Query("SELECT * from categories ORDER BY name")
-    fun get(): Flow<List<Category>>
-}
-
-@Dao
-interface ViewDao {
-    @Query("SELECT * from categories WHERE category_id = :id")
-    fun getCategory(id: String): Category?
+    @Query("SELECT * from categories WHERE id = :id")
+    fun get(id: String): Flow<CategoryEntity>
 
     @Query("SELECT * from categories ORDER BY name")
-    fun getCategories(): Flow<List<Category>>
-
-    @Query("SELECT t.id, t.title, t.currency, t.amount, t.type, t.name categoryName, t.icon, t.color, t.date FROM transactions t ORDER BY date DESC")
-    fun getTransactionCard(): Flow<List<TransactionForCard>>
-
-    @Query("SELECT t.title, t.currency, t.amount, t.type, t.name categoryName, t.note, t.date FROM transactions t WHERE t.id = :transactionId")
-    fun getTransactionDetail(transactionId: String): Flow<TransactionForDetail?>
+    fun get(): Flow<List<CategoryEntity>>
 }
 
 @Dao

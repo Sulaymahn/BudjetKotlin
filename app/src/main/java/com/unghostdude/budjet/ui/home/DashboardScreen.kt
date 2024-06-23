@@ -1,10 +1,6 @@
 package com.unghostdude.budjet.ui.home
 
-import android.icu.number.LocalizedNumberFormatter
 import android.icu.number.NumberFormatter
-import android.icu.util.CurrencyAmount
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +17,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,19 +25,16 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.R
-import com.unghostdude.budjet.model.Account
+import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.viewmodel.DashboardScreenViewModel
 import java.text.NumberFormat
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 @Composable
 fun DashboardScreen(
-    account: Account,
+    account: AccountEntity,
     username: String,
     vm: DashboardScreenViewModel = hiltViewModel<DashboardScreenViewModel>()
 ) {
@@ -50,8 +42,10 @@ fun DashboardScreen(
 
     val balance by vm.balance.collectAsState()
     val scrollState = rememberScrollState()
-    val formatter = NumberFormatter.withLocale(LocalContext.current.resources.configuration.locales[0])
-    val f = NumberFormat.getCurrencyInstance(LocalContext.current.resources.configuration.locales[0])
+    val formatter =
+        NumberFormatter.withLocale(LocalContext.current.resources.configuration.locales[0])
+    val f =
+        NumberFormat.getCurrencyInstance(LocalContext.current.resources.configuration.locales[0])
     f.currency = account.defaultCurrency
 
     Column(
@@ -102,29 +96,6 @@ fun DashboardScreen(
                         }
                     }
                 }
-            }
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .height(100.dp)
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth()
-        ) {
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize()
-            ) {
-
-            }
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize()
-            ) {
-
             }
         }
     }

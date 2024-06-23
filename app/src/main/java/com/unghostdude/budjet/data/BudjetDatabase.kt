@@ -1,23 +1,18 @@
 package com.unghostdude.budjet.data
 
-import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.unghostdude.budjet.model.Account
-import com.unghostdude.budjet.model.Budget
-import com.unghostdude.budjet.model.Category
-import com.unghostdude.budjet.model.Transaction
+import com.unghostdude.budjet.model.AccountEntity
+import com.unghostdude.budjet.model.BudgetEntity
+import com.unghostdude.budjet.model.BudgetCategoryEntity
+import com.unghostdude.budjet.model.CategoryEntity
+import com.unghostdude.budjet.model.TransactionEntity
 import com.unghostdude.budjet.model.TransactionTemplate
-import java.io.File
 import java.time.Instant
 import java.util.Currency
 import java.util.UUID
-import java.util.concurrent.Executors
 
 class Converters {
     @TypeConverter
@@ -79,11 +74,12 @@ class Converters {
 
 @Database(
     entities = [
-        Transaction::class,
+        TransactionEntity::class,
         TransactionTemplate::class,
-        Account::class,
-        Budget::class,
-        Category::class
+        AccountEntity::class,
+        BudgetEntity::class,
+        CategoryEntity::class,
+        BudgetCategoryEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -95,6 +91,5 @@ abstract class BudjetDatabase : RoomDatabase() {
     abstract fun budgetDao(): BudgetDao
     abstract fun accountDao(): AccountDao
     abstract fun categoryDao(): CategoryDao
-    abstract fun viewDao(): ViewDao
     abstract fun analyticDao(): AnalyticDao
 }

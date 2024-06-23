@@ -4,19 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unghostdude.budjet.data.AppSettingRepository
 import com.unghostdude.budjet.data.TransactionRepository
-import com.unghostdude.budjet.model.Transaction
+import com.unghostdude.budjet.model.TransactionEntity
+import com.unghostdude.budjet.model.TransactionWithAccountAndCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,7 +31,7 @@ class TransactionsScreenViewModel @Inject constructor(
         }
     }.flatMapLatest { transactions ->
         val map = transactions.groupBy { transaction ->
-            transaction.date.atZone(ZoneId.systemDefault()).toLocalDate()
+            transaction.transaction.date.atZone(ZoneId.systemDefault()).toLocalDate()
         }
         val res = mutableListOf<TransactionGroup>()
         for (a in map) {
@@ -55,5 +52,5 @@ class TransactionsScreenViewModel @Inject constructor(
 
 data class TransactionGroup(
     val date: LocalDate,
-    val transactions: List<Transaction>
+    val transactions: List<TransactionWithAccountAndCategory>
 )

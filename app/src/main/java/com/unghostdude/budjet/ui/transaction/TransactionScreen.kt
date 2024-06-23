@@ -71,18 +71,18 @@ fun TransactionScreen(
                 items(items = transactionGroups[index].transactions) { transaction ->
                     ListItem(
                         headlineContent = {
-                            Text(text = "${transaction.title}")
+                            Text(text = "${transaction.transaction.title}")
                         },
                         supportingContent = {
-                            Text(text = dateTimeFormatter.format(transaction.date))
+                            Text(text = dateTimeFormatter.format(transaction.transaction.date))
                         },
                         trailingContent = {
-                            Text(text = "${transaction.currency.symbol} ${transaction.amount}")
+                            Text(text = "${transaction.transaction.currency.symbol} ${transaction.transaction.amount}")
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                navigateToTransactionDetail(transaction.id.toString())
+                                navigateToTransactionDetail(transaction.transaction.id.toString())
                             }
                     )
                 }
