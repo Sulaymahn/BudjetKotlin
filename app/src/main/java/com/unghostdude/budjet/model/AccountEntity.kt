@@ -14,8 +14,16 @@ data class AccountEntity(
     @ColumnInfo(index = true)
     val id: UUID,
     val name: String,
-    val defaultCurrency: Currency,
+    val currency: Currency,
     val startAmount: Double
+)
+
+data class AccountWithBalance(
+    val id: UUID,
+    val name: String,
+    val currency: Currency,
+    val startAmount: Double,
+    val balance: Double
 )
 
 data class AccountWithBudgets(

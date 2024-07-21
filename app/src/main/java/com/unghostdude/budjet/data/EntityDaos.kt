@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.unghostdude.budjet.model.AccountEntity
+import com.unghostdude.budjet.model.AccountWithBalance
 import com.unghostdude.budjet.model.BudgetEntity
 import com.unghostdude.budjet.model.BudgetCategoryEntity
 import com.unghostdude.budjet.model.BudgetWithAccountAndCategories
@@ -89,8 +90,15 @@ interface AccountDao {
     @Query("SELECT * from accounts WHERE id = :id")
     fun get(id: String): Flow<AccountEntity>
 
+    @Query("SELECT accounts.id, name, currency, startAmount, balance FROM accounts INNER JOIN (SELECT a.id, COALESCE(SUM(CASE WHEN t.type = 'Income' THEN t.amount WHEN t.type = 'Expense' THEN -t.amount ELSE 0 END), 0) AS balance FROM accounts AS a LEFT JOIN transactions AS t ON a.id = t.accountId GROUP BY a.id) AS q ON accounts.id = q.id WHERE accounts.id = :id")
+    fun getWithBalance(id: String): Flow<AccountWithBalance>
+
+    @Query("SELECT accounts.id, name, currency, startAmount, balance FROM accounts INNER JOIN (SELECT a.id, COALESCE(SUM(CASE WHEN t.type = 'Income' THEN t.amount WHEN t.type = 'Expense' THEN -t.amount ELSE 0 END), 0) AS balance FROM accounts AS a LEFT JOIN transactions AS t ON a.id = t.accountId GROUP BY a.id) AS q ON accounts.id = q.id")
+    fun getWithBalance(): Flow<List<AccountWithBalance>>
+
     @Query("SELECT * from accounts ORDER BY name")
     fun get(): Flow<List<AccountEntity>>
+
 
     @Query("SELECT * from accounts LIMIT 1")
     fun getFirst(): Flow<AccountEntity?>

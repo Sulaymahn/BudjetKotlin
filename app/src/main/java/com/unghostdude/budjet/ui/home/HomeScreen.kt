@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -56,11 +57,13 @@ import com.unghostdude.budjet.viewmodel.HomeScreenViewModel
 fun HomeScreen(
     account: AccountEntity,
     username: String,
-    vm: HomeScreenViewModel = hiltViewModel<HomeScreenViewModel>(),
+    navigateToBudgetDetail: (String) -> Unit,
     navigateToSettings: () -> Unit,
-    navigateToTransactionDetail: (id: String) -> Unit,
-    navigateToNewTransaction: () -> Unit,
-    navigateToNewBudget: () -> Unit
+    navigateToTransactionDetailScreen: (id: String) -> Unit,
+    navigateToTransactionCreationScreen: () -> Unit,
+    navigateToBudgetCreationScreen: () -> Unit,
+    navigateToAccountScreen: () -> Unit,
+    vm: HomeScreenViewModel = hiltViewModel<HomeScreenViewModel>(),
 ) {
     val navController = rememberNavController()
     val navState = navController.currentBackStackEntryAsState()
@@ -133,7 +136,12 @@ fun HomeScreen(
                                                 intent.setType("text/csv")
                                                 intent.putExtra(Intent.EXTRA_STREAM, uri)
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                                context.startActivity(Intent.createChooser(intent, "Share file"))
+                                                context.startActivity(
+                                                    Intent.createChooser(
+                                                        intent,
+                                                        "Share file"
+                                                    )
+                                                )
                                             }
                                         )
                                         showMenu = false
@@ -153,7 +161,7 @@ fun HomeScreen(
 
                             DropdownMenuItem(
                                 text = {
-                                    Text(text = "Switch account")
+                                    Text(text = "Switch accounts")
                                 },
                                 onClick = {
                                     showMenu = false
@@ -170,9 +178,9 @@ fun HomeScreen(
                 ExtendedFloatingActionButton(
                     onClick = {
                         if (currentScreen == Screen.Transaction || currentScreen == Screen.Dashboard) {
-                            navigateToNewTransaction()
+                            navigateToTransactionCreationScreen()
                         } else if (currentScreen == Screen.Budget) {
-                            navigateToNewBudget()
+                            navigateToBudgetCreationScreen()
                         }
                     }
                 ) {
@@ -270,7 +278,8 @@ fun HomeScreen(
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
                     account = account,
-                    username = username
+                    username = username,
+                    navigateToAccountScreen = navigateToAccountScreen
                 )
             }
 
@@ -280,12 +289,14 @@ fun HomeScreen(
 
             composable(Screen.Transaction.route) {
                 TransactionScreen(
-                    navigateToTransactionDetail = navigateToTransactionDetail
+                    navigateToTransactionDetail = navigateToTransactionDetailScreen
                 )
             }
 
             composable(Screen.Budget.route) {
-                BudgetScreen()
+                BudgetScreen(
+                    navigateToBudgetDetail = navigateToBudgetDetail
+                )
             }
         }
 
@@ -295,19 +306,29 @@ fun HomeScreen(
                     showAccountModal = false
                 }
             ) {
-                Text(
-                    text = "Accounts",
-                    style = MaterialTheme.typography.titleSmall,
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Switch Accounts",
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
                 repeat(accounts.size) {
                     ListItem(
                         headlineContent = {
                             Text(text = accounts[it].name)
                         },
                         supportingContent = {
-                            Text(text = accounts[it].defaultCurrency.displayName)
+                            Text(text = accounts[it].currency.displayName)
                         },
                         trailingContent = {
                             if (accounts[it].id == account.id) {
@@ -325,7 +346,9 @@ fun HomeScreen(
                             }
                     )
                 }
-                Spacer(modifier = Modifier.height(160.dp))
+
+
+                Spacer(modifier = Modifier.height(80.dp))
             }
         }
     }

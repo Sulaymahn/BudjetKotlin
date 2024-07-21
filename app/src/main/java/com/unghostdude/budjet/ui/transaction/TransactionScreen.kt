@@ -1,6 +1,8 @@
 package com.unghostdude.budjet.ui.transaction
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +31,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransactionScreen(
     navigateToTransactionDetail: (id: String) -> Unit,
@@ -81,9 +84,14 @@ fun TransactionScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                navigateToTransactionDetail(transaction.transaction.id.toString())
-                            }
+                            .combinedClickable(
+                                onClick = {
+                                    navigateToTransactionDetail(transaction.transaction.id.toString())
+                                },
+                                onLongClick = {
+
+                                }
+                            )
                     )
                 }
             }
@@ -98,7 +106,7 @@ fun TransactionScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            Text(text = "Empty")
+            Text(text = "You haven't made any transactions yet")
         }
     }
 }

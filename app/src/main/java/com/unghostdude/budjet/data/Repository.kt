@@ -1,7 +1,9 @@
 package com.unghostdude.budjet.data
 
 
+import androidx.room.Query
 import com.unghostdude.budjet.model.AccountEntity
+import com.unghostdude.budjet.model.AccountWithBalance
 import com.unghostdude.budjet.model.BudgetEntity
 import com.unghostdude.budjet.model.BudgetCategoryEntity
 import com.unghostdude.budjet.model.BudgetWithAccountAndCategories
@@ -45,6 +47,8 @@ interface AccountRepository {
     suspend fun update(account: AccountEntity)
     suspend fun delete(account: AccountEntity)
     fun get(id: String): Flow<AccountEntity?>
+    fun getWithBalance(id: String): Flow<AccountWithBalance>
+    fun getWithBalance(): Flow<List<AccountWithBalance>>
     fun get(): Flow<List<AccountEntity>>
     fun getFirst(): Flow<AccountEntity?>
 }

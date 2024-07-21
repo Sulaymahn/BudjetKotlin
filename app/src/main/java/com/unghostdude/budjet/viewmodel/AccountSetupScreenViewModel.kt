@@ -43,7 +43,7 @@ class AccountSetupScreenViewModel @Inject constructor(
                 id = UUID.randomUUID(),
                 name = accountName.currentValue,
                 startAmount = 0.0,
-                defaultCurrency = currency!!
+                currency = currency!!
             )
             accountRepo.insert(account)
             userData.setFirstTime(false)

@@ -7,20 +7,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.unghostdude.budjet.ui.budget.CreateBudgetScreen
+import com.unghostdude.budjet.ui.account.AccountScreen
+import com.unghostdude.budjet.ui.budget.BudgetCreationScreen
+import com.unghostdude.budjet.ui.budget.BudgetDetailScreen
 import com.unghostdude.budjet.ui.home.HomeScreen
 import com.unghostdude.budjet.ui.onboarding.AccountSetupScreen
 import com.unghostdude.budjet.ui.onboarding.OnboardingScreen
 import com.unghostdude.budjet.ui.setting.SettingScreen
 import com.unghostdude.budjet.ui.transaction.CreateTransactionScreen
 import com.unghostdude.budjet.ui.transaction.TransactionDetailScreen
-import com.unghostdude.budjet.ui.transaction.TransactionScreen
 import com.unghostdude.budjet.viewmodel.MainNavigatorState
 import com.unghostdude.budjet.viewmodel.MainNavigatorViewModel
 
@@ -62,14 +62,20 @@ fun MainNavigator(
                         navigateToSettings = {
                             navController.navigate(Screen.Settings.route)
                         },
-                        navigateToTransactionDetail = { id ->
+                        navigateToTransactionDetailScreen = { id ->
                             navController.navigate(Screen.Transaction.route + "/" + id)
                         },
-                        navigateToNewTransaction = {
-                            navController.navigate(Screen.NewTransaction.route)
+                        navigateToTransactionCreationScreen = {
+                            navController.navigate(Screen.TransactionCreation.route)
                         },
-                        navigateToNewBudget = {
-                            navController.navigate(Screen.NewBudget.route)
+                        navigateToBudgetCreationScreen = {
+                            navController.navigate(Screen.BudgetCreation.route)
+                        },
+                        navigateToBudgetDetail = { id ->
+                            navController.navigate(Screen.Budget.route + "/" + id)
+                        },
+                        navigateToAccountScreen = {
+                            navController.navigate(Screen.Account.route)
                         }
                     )
                 }
@@ -95,7 +101,7 @@ fun MainNavigator(
                 }
             }
 
-            composable(Screen.NewTransaction.route) {
+            composable(Screen.TransactionCreation.route) {
                 if (preference.account != null) {
                     CreateTransactionScreen(
                         account = preference.account,
@@ -121,7 +127,7 @@ fun MainNavigator(
             }
 
             composable(
-                Screen.TransactionDetail.route,
+                route = Screen.TransactionDetail.route,
                 arguments = listOf(navArgument("id") {
                     type = NavType.StringType
                 })
@@ -133,9 +139,11 @@ fun MainNavigator(
                 )
             }
 
-            composable(Screen.NewBudget.route) {
+            composable(
+                route = Screen.BudgetCreation.route
+            ) {
                 if (preference.account != null) {
-                    CreateBudgetScreen(
+                    BudgetCreationScreen(
                         account = preference.account,
                         navigateAway = {
                             navController.navigateUp()
@@ -148,6 +156,25 @@ fun MainNavigator(
                         }
                     }
                 }
+            }
+
+            composable(
+                route = Screen.BudgetDetail.route,
+                arguments = listOf(navArgument("id") {
+                    type = NavType.StringType
+                })
+            ) {
+                val id = navController.currentBackStackEntry?.arguments?.getString("id")
+                BudgetDetailScreen(
+                    budgetId = id ?: "",
+                    navigateAway = { navController.navigateUp() }
+                )
+            }
+
+            composable(route = Screen.Account.route) {
+                AccountScreen(
+                    navigateAway = { navController.navigateUp() }
+                )
             }
         }
     }

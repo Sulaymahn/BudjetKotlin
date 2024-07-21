@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.unghostdude.budjet.R
 import com.unghostdude.budjet.dataStore
 import com.unghostdude.budjet.model.AccountEntity
+import com.unghostdude.budjet.model.AccountWithBalance
 import com.unghostdude.budjet.model.BudgetEntity
 import com.unghostdude.budjet.model.BudgetCategoryEntity
 import com.unghostdude.budjet.model.BudgetWithAccountAndCategories
@@ -43,6 +44,8 @@ class RoomAccountRepository(private val dao: AccountDao) :
     override suspend fun update(account: AccountEntity) = dao.update(account)
     override suspend fun delete(account: AccountEntity) = dao.delete(account)
     override fun get(id: String): Flow<AccountEntity> = dao.get(id)
+    override fun getWithBalance(id: String): Flow<AccountWithBalance> = dao.getWithBalance(id)
+    override fun getWithBalance(): Flow<List<AccountWithBalance>> = dao.getWithBalance()
     override fun get(): Flow<List<AccountEntity>> = dao.get()
     override fun getFirst(): Flow<AccountEntity?> = dao.getFirst()
 }

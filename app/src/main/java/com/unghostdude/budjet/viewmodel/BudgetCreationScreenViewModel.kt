@@ -23,7 +23,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
-class CreateBudgetScreenViewModel @Inject constructor(
+class BudgetCreationScreenViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val budgetRepository: BudgetRepository
 ) : ViewModel() {

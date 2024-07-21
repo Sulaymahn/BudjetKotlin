@@ -1,6 +1,7 @@
 package com.unghostdude.budjet.ui.home
 
 import android.icu.number.NumberFormatter
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import java.text.NumberFormat
 fun DashboardScreen(
     account: AccountEntity,
     username: String,
+    navigateToAccountScreen: () -> Unit,
     vm: DashboardScreenViewModel = hiltViewModel<DashboardScreenViewModel>()
 ) {
     vm.listen(account)
@@ -46,7 +48,7 @@ fun DashboardScreen(
         NumberFormatter.withLocale(LocalContext.current.resources.configuration.locales[0])
     val f =
         NumberFormat.getCurrencyInstance(LocalContext.current.resources.configuration.locales[0])
-    f.currency = account.defaultCurrency
+    f.currency = account.currency
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -97,6 +99,18 @@ fun DashboardScreen(
                     }
                 }
             }
+        }
+
+        Card(
+            modifier = Modifier
+                .height(100.dp)
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
+                .clickable {
+                    navigateToAccountScreen()
+                }
+        ) {
+
         }
     }
 }

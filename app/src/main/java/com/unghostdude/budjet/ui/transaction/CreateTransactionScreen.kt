@@ -348,7 +348,7 @@ fun CreateTransactionScreen(
                             Text(text = "Amount*")
                         },
                         prefix = {
-                            Text(text = account.defaultCurrency.symbol)
+                            Text(text = account.currency.symbol)
                         },
                         singleLine = true,
                         onValueChange = { newValue ->

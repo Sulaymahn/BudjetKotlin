@@ -2,7 +2,9 @@ package com.unghostdude.budjet.ui.budget
 
 import android.icu.number.NumberFormatter
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -23,6 +26,7 @@ import java.time.format.FormatStyle
 
 @Composable
 fun BudgetScreen(
+    navigateToBudgetDetail: (String) -> Unit,
     vm: BudgetScreenViewModel = hiltViewModel<BudgetScreenViewModel>()
 ) {
     val budgets by vm.budgets.collectAsState(listOf())
@@ -31,36 +35,46 @@ fun BudgetScreen(
     val numberFormatter =
         NumberFormatter.withLocale(LocalContext.current.resources.configuration.locales[0])
 
-    LazyColumn(
-        userScrollEnabled = true
-    ) {
-        items(items = budgets) { budget ->
-            ListItem(
-                headlineContent = {
-                    Text(text = budget.budget.name)
-                },
-                supportingContent = {
-                    Text(text = budget.budget.recurrence.toString())
-                },
-                trailingContent = {
-                    Text(
-                        text = "${budget.account.defaultCurrency.symbol} ${
-                            numberFormatter.format(
-                                budget.budget.amount
-                            )
-                        }"
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-
-                    }
-            )
+    if (budgets.isEmpty()) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Text(text = "You haven't created any budget yet")
         }
+    } else {
+        LazyColumn(
+            userScrollEnabled = true
+        ) {
+            items(items = budgets) { budget ->
+                ListItem(
+                    headlineContent = {
+                        Text(text = budget.budget.name)
+                    },
+                    supportingContent = {
+                        Text(text = budget.budget.recurrence.toString())
+                    },
+                    trailingContent = {
+                        Text(
+                            text = "${budget.account.currency.symbol} ${
+                                numberFormatter.format(
+                                    budget.budget.amount
+                                )
+                            }"
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            navigateToBudgetDetail(budget.budget.id.toString())
+                        }
+                )
+            }
 
-        item {
-            Spacer(modifier = Modifier.height(64.dp))
+            item {
+                Spacer(modifier = Modifier.height(64.dp))
+            }
         }
     }
 }

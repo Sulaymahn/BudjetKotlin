@@ -63,7 +63,7 @@ class CreateTransactionScreenViewModel @Inject constructor(
                 conversionRate = null,
                 destinationAccountId = null,
                 dueDate = null,
-                currency = account.defaultCurrency
+                currency = account.currency
             )
 
             transactionRepository.insert(transaction)

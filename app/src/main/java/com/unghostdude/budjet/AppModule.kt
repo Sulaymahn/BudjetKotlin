@@ -24,6 +24,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.io.File
+import java.time.Instant
+import java.time.LocalDateTime
 import java.util.concurrent.Executors
 import javax.inject.Singleton
 
@@ -122,11 +124,11 @@ object AppModule {
                         )
 
                         db.execSQL("ATTACH DATABASE '$oldDbPath' AS oldDb")
-                        db.execSQL("INSERT OR IGNORE INTO transactions (id, accountId, destinationAccountId, currency, type, conversionRate, amount, title, note, categoryid, categoryname, categoryicon, categorycolor, date, dueDate, lastModified, created) SELECT o.Id, o.AccountId, NULL, o.Currency, CASE o.Type WHEN 1 THEN 'Expense' ELSE 'Income' END, o.ConversionRate, o.Amount, o.Title, o.Description, c.id, c.name, c.icon, c.color, (o.Date - 621355968000000000) / 10000, (o.DueDate - 621355968000000000) / 10000, (o.LastModified - 621355968000000000) / 10000, (o.LastModified - 621355968000000000) / 10000 FROM oldDb.temp_category_map o LEFT OUTER JOIN categories c ON o.Category = c.name")
+                        db.execSQL("INSERT OR IGNORE INTO transactions (id, accountId, destinationAccountId, currency, type, conversionRate, amount, title, note, categoryId, date, dueDate, lastModified, created) SELECT o.Id, o.AccountId, NULL, o.Currency, CASE o.Type WHEN 1 THEN 'Expense' ELSE 'Income' END, o.ConversionRate, o.Amount, o.Title, o.Description, c.id, (o.Date - 621355968000000000) / 10000, (o.DueDate - 621355968000000000) / 10000, (o.LastModified - 621355968000000000) / 10000, (o.LastModified - 621355968000000000) / 10000 FROM oldDb.temp_category_map o LEFT OUTER JOIN categories c ON o.Category = c.name")
                         db.execSQL("INSERT OR IGNORE INTO templates (id, amount, title, note, type) SELECT Id, Amount, Title, Description, CASE WHEN Type = 1 THEN 'Expense' ELSE 'Income' END FROM oldDb.TransactionTemplateEntity;")
                         db.execSQL("INSERT OR IGNORE INTO accounts SELECT * FROM oldDb.AccountEntity")
-                        db.execSQL("INSERT OR IGNORE INTO budgets (id, name, amount, recurrence, start, end) SELECT Id, Name, Amount, CASE DurationCycle WHEN 1 THEN 'Daily' WHEN 2 THEN 'Weekly' WHEN 3 THEN 'Monthly' WHEN 4 THEN 'Yearly' ELSE 'OneTime' END, CASE WHEN StartDate IS NULL THEN NULL ELSE ((StartDate - 621355968000000000) / 10000) END, CASE WHEN EndDate IS NULL THEN NULL ELSE ((EndDate - 621355968000000000) / 10000) END FROM oldDb.BudgetEntity")
-                        db.execSQL("INSERT OR IGNORE INTO budget_account (budgetId, accountId) SELECT Id, AccountId FROM oldDb.BudgetEntity")
+                        db.execSQL("INSERT OR IGNORE INTO budgets (id, accountId, name, amount, recurrence, created, start, end) SELECT Id, AccountId, Name, Amount, CASE DurationCycle WHEN 1 THEN 'Daily' WHEN 2 THEN 'Weekly' WHEN 3 THEN 'Monthly' WHEN 4 THEN 'Yearly' ELSE 'OneTime' END, ${Instant.now().epochSecond}, CASE WHEN StartDate IS NULL THEN NULL ELSE ((StartDate - 621355968000000000) / 10000) END, CASE WHEN EndDate IS NULL THEN NULL ELSE ((EndDate - 621355968000000000) / 10000) END FROM oldDb.BudgetEntity")
+//                        db.execSQL("INSERT OR IGNORE INTO budget_account (budgetId, accountId) SELECT Id, AccountId FROM oldDb.BudgetEntity")
 
                         val c = db.query("SELECT Id, Categories FROM oldDb.BudgetEntity")
                         if (c.count != 0) {

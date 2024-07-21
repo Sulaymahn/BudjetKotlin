@@ -41,14 +41,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.R
 import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.model.Recurrence
-import com.unghostdude.budjet.viewmodel.CreateBudgetScreenViewModel
+import com.unghostdude.budjet.viewmodel.BudgetCreationScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun CreateBudgetScreen(
+fun BudgetCreationScreen(
     account: AccountEntity,
     navigateAway: () -> Unit,
-    vm: CreateBudgetScreenViewModel = hiltViewModel<CreateBudgetScreenViewModel>()
+    vm: BudgetCreationScreenViewModel = hiltViewModel<BudgetCreationScreenViewModel>()
 ) {
     val categories by vm.categories.collectAsState()
     val focusManager = LocalFocusManager.current
@@ -138,7 +138,7 @@ fun CreateBudgetScreen(
                             Text(text = "Amount*")
                         },
                         prefix = {
-                            Text(text = account.defaultCurrency.symbol)
+                            Text(text = account.currency.symbol)
                         },
                         singleLine = true,
                         onValueChange = { newValue ->
