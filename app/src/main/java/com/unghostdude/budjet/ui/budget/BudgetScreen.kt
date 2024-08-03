@@ -41,7 +41,7 @@ fun BudgetScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            Text(text = "You haven't created any budget yet")
+            Text(text = "You haven't made any budget yet")
         }
     } else {
         LazyColumn(

@@ -27,12 +27,15 @@ interface TransactionDao {
     @Delete
     suspend fun delete(transaction: TransactionEntity)
 
+    @androidx.room.Transaction
     @Query("SELECT * FROM transactions WHERE id = :id LIMIT 1")
     fun get(id: String): Flow<TransactionWithAccountAndCategory>
 
+    @androidx.room.Transaction
     @Query("SELECT * FROM transactions ORDER BY date DESC")
     fun get(): Flow<List<TransactionWithAccountAndCategory>>
 
+    @androidx.room.Transaction
     @Query("SELECT * FROM transactions WHERE accountId = :accountId ORDER BY date DESC")
     fun getWithAccountId(accountId: String): Flow<List<TransactionWithAccountAndCategory>>
 }
@@ -90,10 +93,10 @@ interface AccountDao {
     @Query("SELECT * from accounts WHERE id = :id")
     fun get(id: String): Flow<AccountEntity>
 
-    @Query("SELECT accounts.id, name, currency, startAmount, balance FROM accounts INNER JOIN (SELECT a.id, COALESCE(SUM(CASE WHEN t.type = 'Income' THEN t.amount WHEN t.type = 'Expense' THEN -t.amount ELSE 0 END), 0) AS balance FROM accounts AS a LEFT JOIN transactions AS t ON a.id = t.accountId GROUP BY a.id) AS q ON accounts.id = q.id WHERE accounts.id = :id")
+    @Query("SELECT accounts.id, name, currency, startAmount, accounts.created, balance FROM accounts INNER JOIN (SELECT a.id, COALESCE(SUM(CASE WHEN t.type = 'Income' THEN t.amount WHEN t.type = 'Expense' THEN -t.amount ELSE 0 END), 0) AS balance FROM accounts AS a LEFT JOIN transactions AS t ON a.id = t.accountId GROUP BY a.id) AS q ON accounts.id = q.id WHERE accounts.id = :id")
     fun getWithBalance(id: String): Flow<AccountWithBalance>
 
-    @Query("SELECT accounts.id, name, currency, startAmount, balance FROM accounts INNER JOIN (SELECT a.id, COALESCE(SUM(CASE WHEN t.type = 'Income' THEN t.amount WHEN t.type = 'Expense' THEN -t.amount ELSE 0 END), 0) AS balance FROM accounts AS a LEFT JOIN transactions AS t ON a.id = t.accountId GROUP BY a.id) AS q ON accounts.id = q.id")
+    @Query("SELECT accounts.id, name, currency, startAmount, accounts.created, balance FROM accounts INNER JOIN (SELECT a.id, COALESCE(SUM(CASE WHEN t.type = 'Income' THEN t.amount WHEN t.type = 'Expense' THEN -t.amount ELSE 0 END), 0) AS balance FROM accounts AS a LEFT JOIN transactions AS t ON a.id = t.accountId GROUP BY a.id) AS q ON accounts.id = q.id")
     fun getWithBalance(): Flow<List<AccountWithBalance>>
 
     @Query("SELECT * from accounts ORDER BY name")

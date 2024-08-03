@@ -29,13 +29,6 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    @Inject
-    lateinit var db: AccountRepository
-
-    @Inject
-    lateinit var settings: AppSettingRepository
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

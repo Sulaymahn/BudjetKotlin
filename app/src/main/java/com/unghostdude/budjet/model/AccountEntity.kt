@@ -5,6 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import java.time.Instant
 import java.util.Currency
 import java.util.UUID
 
@@ -15,7 +16,8 @@ data class AccountEntity(
     val id: UUID,
     val name: String,
     val currency: Currency,
-    val startAmount: Double
+    val startAmount: Double,
+    val created: Instant
 )
 
 data class AccountWithBalance(
@@ -23,6 +25,7 @@ data class AccountWithBalance(
     val name: String,
     val currency: Currency,
     val startAmount: Double,
+    val created: Instant,
     val balance: Double
 )
 

@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +29,7 @@ import com.unghostdude.budjet.viewmodel.AccountScreenViewModel
 @Composable
 fun AccountScreen(
     navigateAway: () -> Unit,
+    navigateToAccountCreation: () -> Unit,
     vm: AccountScreenViewModel = hiltViewModel()
 ) {
     val accounts by vm.accounts.collectAsState()
@@ -46,19 +49,18 @@ fun AccountScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = navigateToAccountCreation) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = null)
                     }
                 }
             )
         }
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(it)
         ) {
-            repeat(times = accounts.size) { index ->
-                val account = accounts[index]
+            items(items = accounts){ account ->
                 ListItem(
                     headlineContent = {
                         Text(text = account.name)

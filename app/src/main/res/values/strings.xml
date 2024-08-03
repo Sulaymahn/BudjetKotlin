@@ -7,7 +7,6 @@
     <string name="username_key" translatable="false">Username</string>
     <string name="theme_key" translatable="false">Theme</string>
     <string name="balance_visibility_key" translatable="false">BalanceVisibility</string>
-    <string name="dynamic_theme_key" translatable="false">DynamicTheme</string>
     <string name="first_time_key" translatable="false">FirstTime</string>
     <string name="preferred_currency_key" translatable="false">PreferredCurrency</string>
     <string name="active_account_key" translatable="false">CurrentAccount</string>
@@ -19,7 +18,7 @@
     <string name="tutorial_three_title">Improve your lifestyle</string>
     <string name="tutorial_three_body">We\'ll help you prepare for a better financial future!</string>
 
-    <string name="account_setup_title">Setup your account</string>
+    <string name="account_setup_title">Create your first account</string>
     <string name="account_setup_username_label">Username</string>
     <string name="account_setup_account_name_label">Account name</string>
     <string name="account_setup_account_currency_label">Account Currency</string>

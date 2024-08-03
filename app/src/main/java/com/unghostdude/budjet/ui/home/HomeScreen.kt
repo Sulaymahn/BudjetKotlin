@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -24,6 +26,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -35,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -99,83 +104,15 @@ fun HomeScreen(
                     }
                 },
                 actions = {
-                    var showMenu by remember {
-                        mutableStateOf(false)
-                    }
-                    IconButton(
-                        onClick = { showMenu = true },
-                        modifier = Modifier
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = null
-                        )
-
-                        DropdownMenu(
-                            expanded = showMenu,
-                            onDismissRequest = {
-                                showMenu = false
-                            }
-                        ) {
-                            if (currentScreen == Screen.Transaction || currentScreen == Screen.Dashboard) {
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(text = "Export as csv")
-                                    },
-                                    onClick = {
-                                        vm.exportToCsv(
-                                            baseDirectory = context.filesDir.absolutePath,
-                                            callback = { path, file ->
-                                                val uri = FileProvider.getUriForFile(
-                                                    context,
-                                                    BuildConfig.APPLICATION_ID + ".fileprovider",
-                                                    file
-                                                )
-                                                val intent = Intent(Intent.ACTION_SEND)
-                                                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                                intent.setType("text/csv")
-                                                intent.putExtra(Intent.EXTRA_STREAM, uri)
-                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                                context.startActivity(
-                                                    Intent.createChooser(
-                                                        intent,
-                                                        "Share file"
-                                                    )
-                                                )
-                                            }
-                                        )
-                                        showMenu = false
-                                    }
-                                )
-                            }
-
-                            DropdownMenuItem(
-                                text = {
-                                    Text(text = "Settings")
-                                },
-                                onClick = {
-                                    showMenu = false
-                                    navigateToSettings()
-                                }
-                            )
-
-                            DropdownMenuItem(
-                                text = {
-                                    Text(text = "Switch accounts")
-                                },
-                                onClick = {
-                                    showMenu = false
-                                    showAccountModal = true
-                                }
-                            )
-                        }
+                    IconButton(onClick = navigateToSettings) {
+                        Icon(imageVector = Icons.Default.Settings, contentDescription = null)
                     }
                 }
             )
         },
         floatingActionButton = {
             if (currentScreen != Screen.Analytic) {
-                ExtendedFloatingActionButton(
+                FloatingActionButton(
                     onClick = {
                         if (currentScreen == Screen.Transaction || currentScreen == Screen.Dashboard) {
                             navigateToTransactionCreationScreen()
@@ -188,13 +125,17 @@ fun HomeScreen(
                         imageVector = Icons.Default.Add,
                         contentDescription = null
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "Create")
                 }
             }
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+
+            ) {
+                val barItemColors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.primary
+                )
+
                 NavigationBarItem(
                     selected = currentScreen == Screen.Dashboard,
                     onClick = {
@@ -203,14 +144,22 @@ fun HomeScreen(
                         }
                     },
                     icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.outline_dashboard),
-                            contentDescription = null
-                        )
+                        if (currentScreen == Screen.Dashboard) {
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_dashboard),
+                                contentDescription = null
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(R.drawable.outline_dashboard),
+                                contentDescription = null
+                            )
+                        }
                     },
                     label = {
                         Text(text = "Dashboard")
-                    }
+                    },
+                    colors = barItemColors
                 )
 
                 NavigationBarItem(
@@ -221,14 +170,22 @@ fun HomeScreen(
                         }
                     },
                     icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.outline_monetization_on),
-                            contentDescription = null
-                        )
+                        if (currentScreen == Screen.Budget) {
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_monetization_on),
+                                contentDescription = null
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(R.drawable.outline_monetization_on),
+                                contentDescription = null
+                            )
+                        }
                     },
                     label = {
                         Text(text = Screen.Budget.title)
-                    }
+                    },
+                    colors = barItemColors
                 )
 
                 NavigationBarItem(
@@ -239,14 +196,22 @@ fun HomeScreen(
                         }
                     },
                     icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.outline_analytics),
-                            contentDescription = null
-                        )
+                        if (currentScreen == Screen.Analytic) {
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_analytics),
+                                contentDescription = null
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(R.drawable.outline_analytics),
+                                contentDescription = null
+                            )
+                        }
                     },
                     label = {
                         Text(text = Screen.Analytic.title)
-                    }
+                    },
+                    colors = barItemColors
                 )
 
                 NavigationBarItem(
@@ -257,14 +222,22 @@ fun HomeScreen(
                         }
                     },
                     icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.outline_article),
-                            contentDescription = null
-                        )
+                        if (currentScreen == Screen.Transaction) {
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_article),
+                                contentDescription = null
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(R.drawable.outline_article),
+                                contentDescription = null
+                            )
+                        }
                     },
                     label = {
                         Text(text = Screen.Transaction.title)
-                    }
+                    },
+                    colors = barItemColors
                 )
             }
         }
@@ -277,9 +250,11 @@ fun HomeScreen(
         ) {
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
-                    account = account,
                     username = username,
-                    navigateToAccountScreen = navigateToAccountScreen
+                    navigateToAccountScreen = navigateToAccountScreen,
+                    navigateToSwitchSelectedAccount = {
+                        showAccountModal = true
+                    }
                 )
             }
 
@@ -314,14 +289,14 @@ fun HomeScreen(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = "Switch Accounts",
+                        text = "Selected Account",
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 repeat(accounts.size) {
                     ListItem(
                         headlineContent = {

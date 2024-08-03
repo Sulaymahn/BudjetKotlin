@@ -36,42 +36,4 @@ class HomeScreenViewModel @Inject constructor(
             userRepo.setActiveAccount(account.id)
         }
     }
-
-    fun exportToCsv(baseDirectory: String, callback: (path: String, file: File) -> Unit) {
-        viewModelScope.launch {
-            val dateFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-                .withZone(ZoneId.systemDefault())
-
-            val dir = File(
-                baseDirectory,
-                "/exports/csv/"
-            )
-
-            if(!dir.exists()){
-                dir.mkdirs()
-            }
-
-            val file = File(
-                dir,
-                "budjet_${
-                    LocalDateTime.now().format(
-                        DateTimeFormatter.ofPattern("Ld_Hm").withZone(ZoneId.systemDefault())
-                    )
-                }.csv"
-            )
-
-            val transactions = transactionRepository.get().firstOrNull()?.map { t ->
-                "${dateFormatter.format(t.transaction.date)}, ${t.transaction.title}, ${t.transaction.amount}, ${t.transaction.type}, ${t.transaction.currency.currencyCode}, ${t.account.name}"
-            } ?: listOf()
-
-            file.createNewFile()
-            val writer = FileWriter(file)
-            writer.appendLine("date, title, amount, type, currency, account name")
-            transactions.forEach {
-                writer.appendLine(it)
-            }
-            writer.close()
-            callback(file.absolutePath, file)
-        }
-    }
 }

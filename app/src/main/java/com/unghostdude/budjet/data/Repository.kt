@@ -4,6 +4,7 @@ package com.unghostdude.budjet.data
 import androidx.room.Query
 import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.model.AccountWithBalance
+import com.unghostdude.budjet.model.AppTheme
 import com.unghostdude.budjet.model.BudgetEntity
 import com.unghostdude.budjet.model.BudgetCategoryEntity
 import com.unghostdude.budjet.model.BudgetWithAccountAndCategories
@@ -46,8 +47,8 @@ interface AccountRepository {
     suspend fun insert(account: AccountEntity)
     suspend fun update(account: AccountEntity)
     suspend fun delete(account: AccountEntity)
-    fun get(id: String): Flow<AccountEntity?>
-    fun getWithBalance(id: String): Flow<AccountWithBalance>
+    fun get(id: UUID): Flow<AccountEntity?>
+    fun getWithBalance(id: UUID): Flow<AccountWithBalance>
     fun getWithBalance(): Flow<List<AccountWithBalance>>
     fun get(): Flow<List<AccountEntity>>
     fun getFirst(): Flow<AccountEntity?>
@@ -71,13 +72,13 @@ interface AnalyticRepository{
 interface AppSettingRepository {
     val username: Flow<String>
     val isFirstTime : Flow<Boolean>
-    val useDynamicColor: Flow<Boolean>
+    val theme: Flow<AppTheme>
     val showBalance: Flow<Boolean>
     val activeAccount : Flow<UUID?>
     suspend fun setActiveAccount(id: UUID)
     suspend fun setFirstTime(value: Boolean)
     suspend fun setUsername(username: String)
-    suspend fun setDynamicTheme(value: Boolean)
+    suspend fun setTheme(theme: AppTheme)
     suspend fun setBalanceVisibility(value: Boolean)
 }
 

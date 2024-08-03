@@ -23,16 +23,11 @@ class TransactionsScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val transactions = settingRepository.activeAccount.flatMapLatest {
-        if (it == null) {
-            flowOf(listOf())
-        } else {
-            transactionRepository.getWithAccountId(it.toString())
-        }
-    }.flatMapLatest { transactions ->
+    val transactions = transactionRepository.get().flatMapLatest { transactions ->
         val map = transactions.groupBy { transaction ->
             transaction.transaction.date.atZone(ZoneId.systemDefault()).toLocalDate()
         }
+
         val res = mutableListOf<TransactionGroup>()
         for (a in map) {
             res.add(

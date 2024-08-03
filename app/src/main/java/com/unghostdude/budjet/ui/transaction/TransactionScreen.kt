@@ -77,7 +77,7 @@ fun TransactionScreen(
                             Text(text = "${transaction.transaction.title}")
                         },
                         supportingContent = {
-                            Text(text = dateTimeFormatter.format(transaction.transaction.date))
+                            Text(text = transaction.account.name)
                         },
                         trailingContent = {
                             Text(text = "${transaction.transaction.currency.symbol} ${transaction.transaction.amount}")

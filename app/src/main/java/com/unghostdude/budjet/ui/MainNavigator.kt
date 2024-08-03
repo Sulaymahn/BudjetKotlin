@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.unghostdude.budjet.ui.account.AccountCreationScreen
 import com.unghostdude.budjet.ui.account.AccountScreen
 import com.unghostdude.budjet.ui.budget.BudgetCreationScreen
 import com.unghostdude.budjet.ui.budget.BudgetDetailScreen
@@ -36,20 +37,20 @@ fun MainNavigator(
             CircularProgressIndicator()
         }
     } else {
-        val preference = state as MainNavigatorState.Idle
+        val uiState = state as MainNavigatorState.Idle
 
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route
         ) {
             composable(Screen.Home.route) {
-                if (preference.isFirstTime) {
+                if (uiState.isFirstTime) {
                     navController.navigate(Screen.Onboarding.route) {
                         popUpTo(Screen.Home.route) {
                             inclusive = true
                         }
                     }
-                } else if (preference.account == null) {
+                } else if (uiState.account == null) {
                     navController.navigate(Screen.AccountSetup.route) {
                         popUpTo(Screen.Home.route) {
                             inclusive = true
@@ -57,8 +58,8 @@ fun MainNavigator(
                     }
                 } else {
                     HomeScreen(
-                        account = preference.account,
-                        username = preference.username,
+                        account = uiState.account,
+                        username = uiState.username,
                         navigateToSettings = {
                             navController.navigate(Screen.Settings.route)
                         },
@@ -88,7 +89,7 @@ fun MainNavigator(
             }
 
             composable(Screen.AccountSetup.route) {
-                if (preference.account == null) {
+                if (uiState.account == null) {
                     AccountSetupScreen {
                         navController.navigate(Screen.Home.route)
                     }
@@ -102,14 +103,31 @@ fun MainNavigator(
             }
 
             composable(Screen.TransactionCreation.route) {
-                if (preference.account != null) {
+                if (uiState.account != null) {
                     CreateTransactionScreen(
-                        account = preference.account,
+                        account = uiState.account,
                         navigateAway = {
                             navController.navigateUp()
                         }
                     )
                 } else {
+                    navController.navigate(Screen.AccountSetup.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
+
+            composable(Screen.AccountCreation.route){
+                if(uiState.account != null){
+                    AccountCreationScreen(
+                        account = uiState.account,
+                        navigateAway = {
+                            navController.navigateUp()
+                        }
+                    )
+                }else{
                     navController.navigate(Screen.AccountSetup.route) {
                         popUpTo(Screen.Home.route) {
                             inclusive = true
@@ -142,9 +160,9 @@ fun MainNavigator(
             composable(
                 route = Screen.BudgetCreation.route
             ) {
-                if (preference.account != null) {
+                if (uiState.account != null) {
                     BudgetCreationScreen(
-                        account = preference.account,
+                        account = uiState.account,
                         navigateAway = {
                             navController.navigateUp()
                         }
@@ -173,7 +191,10 @@ fun MainNavigator(
 
             composable(route = Screen.Account.route) {
                 AccountScreen(
-                    navigateAway = { navController.navigateUp() }
+                    navigateAway = { navController.navigateUp() },
+                    navigateToAccountCreation = {
+                        navController.navigate(Screen.AccountCreation.route)
+                    }
                 )
             }
         }

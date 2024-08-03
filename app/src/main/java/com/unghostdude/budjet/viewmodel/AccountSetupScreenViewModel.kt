@@ -12,6 +12,8 @@ import com.unghostdude.budjet.utilities.FormControl
 import com.unghostdude.budjet.utilities.Validators
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.Currency
 import java.util.UUID
 import javax.inject.Inject
@@ -25,10 +27,10 @@ class AccountSetupScreenViewModel @Inject constructor(
         AccountSetupScreenState.Idle
     )
     val username = FormControl(
-        validators = listOf(Validators.Required(), Validators.MaxLength(64), Validators.Name())
+        validators = listOf(Validators.Required(), Validators.MaxLength(32))
     )
     val accountName = FormControl(
-        validators = listOf(Validators.Required(), Validators.MaxLength(64), Validators.Name())
+        validators = listOf(Validators.Required(), Validators.MaxLength(32))
     )
     var currency by mutableStateOf<Currency?>(null)
 
@@ -41,14 +43,15 @@ class AccountSetupScreenViewModel @Inject constructor(
             state = AccountSetupScreenState.Loading
             val account = AccountEntity(
                 id = UUID.randomUUID(),
-                name = accountName.currentValue,
+                name = accountName.currentValue.trim(),
                 startAmount = 0.0,
-                currency = currency!!
+                currency = currency!!,
+                created = LocalDateTime.now().toInstant(ZoneOffset.UTC)
             )
             accountRepo.insert(account)
             userData.setFirstTime(false)
             userData.setActiveAccount(account.id)
-            userData.setUsername(username.currentValue)
+            userData.setUsername(username.currentValue.trim())
             onCompleted()
         }
     }

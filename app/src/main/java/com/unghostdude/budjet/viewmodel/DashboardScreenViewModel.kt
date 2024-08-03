@@ -2,6 +2,7 @@ package com.unghostdude.budjet.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.unghostdude.budjet.data.AccountRepository
 import com.unghostdude.budjet.data.AnalyticRepository
 import com.unghostdude.budjet.data.AppSettingRepository
 import com.unghostdude.budjet.data.TransactionRepository
@@ -19,22 +20,23 @@ import javax.inject.Inject
 class DashboardScreenViewModel @Inject constructor(
     private val analyticRepo: AnalyticRepository,
     private val transactionRepository: TransactionRepository,
-    private val settingRepository: AppSettingRepository
+    private val settingRepository: AppSettingRepository,
+    private val accountRepository: AccountRepository
 ) : ViewModel() {
-    private val accountFlow = MutableStateFlow<AccountEntity?>(null)
-
-    fun listen(account: AccountEntity) {
-        if(accountFlow.value?.id != account.id){
-            accountFlow.value = account
-        }
-    }
+    
+    val accounts = accountRepository.getWithBalance()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            listOf()
+        )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val balance = settingRepository.activeAccount.flatMapLatest { accountId ->
+    val selectedAccount = settingRepository.activeAccount.flatMapLatest { accountId ->
         if (accountId == null) {
             flowOf(null)
         } else {
-            analyticRepo.getAccountBalance(accountId.toString())
+            accountRepository.getWithBalance(accountId)
         }
     }.stateIn(
         viewModelScope,

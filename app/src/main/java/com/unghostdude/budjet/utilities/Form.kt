@@ -95,9 +95,9 @@ sealed class Validators {
         }
     }
 
-    class MaxLength(private val max: Int, errorMessage: String = "") : FormValidator(errorMessage) {
+    class MaxLength(private val max: Int, errorMessage: String = "Must be less than $max characters") : FormValidator(errorMessage) {
         override fun isValid(value: String): ValidationResult {
-            return if (value.length <= max) ValidationResult(true, "") else ValidationResult(
+            return if (value.length < max) ValidationResult(true, "") else ValidationResult(
                 false,
                 errorMessage
             )
@@ -114,7 +114,19 @@ sealed class Validators {
         }
     }
 
-    class Name(errorMessage: String = "Only letters are allowed") :
+    class Letters(errorMessage: String = "Only letters are allowed") :
+        FormValidator(errorMessage) {
+        override fun isValid(value: String): ValidationResult {
+            val regex =
+                Pattern.compile("^\\p{L}+\$", Pattern.UNICODE_CASE or Pattern.CASE_INSENSITIVE)
+            return if (regex.matcher(value).matches()) ValidationResult(
+                true,
+                ""
+            ) else ValidationResult(false, errorMessage)
+        }
+    }
+
+    class LettersAndSpace(errorMessage: String = "Only letters and space are allowed") :
         FormValidator(errorMessage) {
         override fun isValid(value: String): ValidationResult {
             val regex =
