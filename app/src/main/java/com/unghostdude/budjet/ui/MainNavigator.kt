@@ -105,7 +105,6 @@ fun MainNavigator(
             composable(Screen.TransactionCreation.route) {
                 if (uiState.account != null) {
                     CreateTransactionScreen(
-                        account = uiState.account,
                         navigateAway = {
                             navController.navigateUp()
                         }
@@ -122,7 +121,6 @@ fun MainNavigator(
             composable(Screen.AccountCreation.route){
                 if(uiState.account != null){
                     AccountCreationScreen(
-                        account = uiState.account,
                         navigateAway = {
                             navController.navigateUp()
                         }

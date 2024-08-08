@@ -181,7 +181,7 @@ fun AccountsCard(
                     Text(
                         text = formatter
                             .unit(Currency.getInstance(account.currency.currencyCode))
-                            .format(account.balance)
+                            .format(account.balance + account.startAmount)
                             .toString()
                     )
                 }

@@ -74,7 +74,7 @@ fun TransactionScreen(
                 items(items = transactionGroups[index].transactions) { transaction ->
                     ListItem(
                         headlineContent = {
-                            Text(text = "${transaction.transaction.title}")
+                            Text(text = transaction.category.name)
                         },
                         supportingContent = {
                             Text(text = transaction.account.name)

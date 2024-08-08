@@ -25,6 +25,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -72,11 +73,11 @@ import java.time.format.FormatStyle
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTransactionScreen(
-    account: AccountEntity,
     navigateAway: () -> Unit,
     vm: CreateTransactionScreenViewModel = hiltViewModel<CreateTransactionScreenViewModel>()
 ) {
-    val categories by vm.categories.collectAsState(listOf())
+    val categories by vm.categories.collectAsState()
+    val accounts by vm.accounts.collectAsState()
 
     var dialog: CreateTransactionScreenDialog by remember {
         mutableStateOf(CreateTransactionScreenDialog.None)
@@ -107,7 +108,6 @@ fun CreateTransactionScreen(
                         enabled = vm.canCreateTransaction(),
                         onClick = {
                             vm.createTransaction(
-                                account = account,
                                 onCreated = navigateAway
                             )
                         }) {
@@ -314,6 +314,56 @@ fun CreateTransactionScreen(
                     }
                 }
 
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    ExposedDropdownMenuBox(
+                        expanded = dialog == CreateTransactionScreenDialog.Account,
+                        onExpandedChange = {
+                            dialog =
+                                if (dialog != CreateTransactionScreenDialog.Account) CreateTransactionScreenDialog.Account
+                                else CreateTransactionScreenDialog.None
+                        }
+                    ) {
+                        OutlinedTextField(
+                            value = vm.account?.name ?: "",
+                            onValueChange = {},
+                            readOnly = true,
+                            singleLine = true,
+                            label = {
+                                Text(text = "Account*")
+                            },
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = dialog == CreateTransactionScreenDialog.Account)
+                            },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = dialog == CreateTransactionScreenDialog.Account,
+                            onDismissRequest = {
+                                dialog = CreateTransactionScreenDialog.None
+                            }
+                        ) {
+                            accounts.forEach { item ->
+                                DropdownMenuItem(
+                                    text = { Text(text = item.name) },
+                                    onClick = {
+                                        vm.account = item
+                                        dialog = CreateTransactionScreenDialog.None
+                                        focusManager.moveFocus(FocusDirection.Down)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider()
+
                 OutlinedTextField(
                     value = vm.title.currentValue,
                     label = {
@@ -348,7 +398,7 @@ fun CreateTransactionScreen(
                             Text(text = "Amount*")
                         },
                         prefix = {
-                            Text(text = account.currency.symbol)
+                            Text(text = vm.account?.currency?.symbol ?: "")
                         },
                         singleLine = true,
                         onValueChange = { newValue ->
@@ -372,6 +422,7 @@ fun CreateTransactionScreen(
                             keyboardType = KeyboardType.NumberPassword,
                             imeAction = ImeAction.Next
                         ),
+                        enabled = vm.account != null,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
@@ -460,4 +511,5 @@ sealed class CreateTransactionScreenDialog {
     data object Category : CreateTransactionScreenDialog()
     data object Time : CreateTransactionScreenDialog()
     data object Date : CreateTransactionScreenDialog()
+    data object Account : CreateTransactionScreenDialog()
 }

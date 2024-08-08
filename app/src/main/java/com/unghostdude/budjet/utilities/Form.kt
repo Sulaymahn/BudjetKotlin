@@ -3,6 +3,7 @@ package com.unghostdude.budjet.utilities
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.unghostdude.budjet.model.supportedCurrencies
 import java.util.regex.Pattern
 
 class FormGroup(
@@ -43,7 +44,16 @@ class FormControl(
         if(validateOnInitializing) checkValidity() else true
     )
 
+    fun peepValidity() : Boolean{
+        validators.forEach { validator ->
+            val res = validator.isValid(currentValue)
+            if (!res.valid) {
+                return false
+            }
+        }
 
+        return true
+    }
 
     private fun checkValidity(): Boolean {
         val errs = mutableListOf<String>()
@@ -132,6 +142,20 @@ sealed class Validators {
             val regex =
                 Pattern.compile("^\\p{L}+\$", Pattern.UNICODE_CASE or Pattern.CASE_INSENSITIVE)
             return if (regex.matcher(value).matches()) ValidationResult(
+                true,
+                ""
+            ) else ValidationResult(false, errorMessage)
+        }
+    }
+
+    class CurrencyCode(errorMessage: String = "Only currency codes are allowed") :
+        FormValidator(errorMessage) {
+        override fun isValid(value: String): ValidationResult {
+            val currencyExists = supportedCurrencies.any {
+                it.currencyCode == value
+            }
+
+            return if (currencyExists) ValidationResult(
                 true,
                 ""
             ) else ValidationResult(false, errorMessage)

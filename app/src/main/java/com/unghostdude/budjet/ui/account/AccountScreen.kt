@@ -16,6 +16,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,7 +37,7 @@ fun AccountScreen(
 
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = "Accounts")
                 },
@@ -66,7 +67,7 @@ fun AccountScreen(
                         Text(text = account.name)
                     },
                     supportingContent = {
-                        Text(text = "${account.balance}")
+                        Text(text = "${account.balance + account.startAmount}")
                     },
                     modifier = Modifier
                         .combinedClickable(
