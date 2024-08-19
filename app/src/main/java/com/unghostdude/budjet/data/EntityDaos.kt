@@ -6,14 +6,14 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.unghostdude.budjet.model.AccountEntity
-import com.unghostdude.budjet.model.AccountWithBalance
+import com.unghostdude.budjet.model.Account
 import com.unghostdude.budjet.model.BudgetEntity
 import com.unghostdude.budjet.model.BudgetCategoryEntity
-import com.unghostdude.budjet.model.BudgetWithAccountAndCategories
+import com.unghostdude.budjet.model.Budget
 import com.unghostdude.budjet.model.CategoryEntity
 import com.unghostdude.budjet.model.TransactionEntity
 import com.unghostdude.budjet.model.TransactionTemplate
-import com.unghostdude.budjet.model.TransactionWithAccountAndCategory
+import com.unghostdude.budjet.model.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -29,15 +29,19 @@ interface TransactionDao {
 
     @androidx.room.Transaction
     @Query("SELECT * FROM transactions WHERE id = :id LIMIT 1")
-    fun get(id: String): Flow<TransactionWithAccountAndCategory>
+    fun get(id: String): Flow<Transaction>
 
     @androidx.room.Transaction
     @Query("SELECT * FROM transactions ORDER BY date DESC")
-    fun get(): Flow<List<TransactionWithAccountAndCategory>>
+    fun get(): Flow<List<Transaction>>
 
     @androidx.room.Transaction
     @Query("SELECT * FROM transactions WHERE accountId = :accountId ORDER BY date DESC")
-    fun getWithAccountId(accountId: String): Flow<List<TransactionWithAccountAndCategory>>
+    fun getByAccount(accountId: String): Flow<List<Transaction>>
+
+    @androidx.room.Transaction
+    @Query("SELECT * FROM transactions WHERE categoryId IN (:categoryIds) ORDER BY date DESC")
+    fun getByCategory(categoryIds: List<Int>): Flow<List<Transaction>>
 }
 
 @Dao
@@ -49,12 +53,12 @@ interface BudgetDao {
     suspend fun insert(items: List<BudgetCategoryEntity>)
 
     @androidx.room.Transaction
-    suspend fun insert(budget: BudgetEntity, items: List<CategoryEntity>) {
+    suspend fun insert(budget: BudgetEntity, categoryIds: List<Int>) {
         insert(budget)
-        val i = items.map { item ->
+        val i = categoryIds.map { item ->
             BudgetCategoryEntity(
                 budgetId = budget.id,
-                categoryId = item.id
+                categoryId = item
             )
         }
         insert(i)
@@ -68,15 +72,12 @@ interface BudgetDao {
 
     @androidx.room.Transaction
     @Query("SELECT * from budgets WHERE id = :id")
-    fun get(id: String): Flow<BudgetWithAccountAndCategories>
+    fun get(id: String): Flow<Budget>
 
     @androidx.room.Transaction
     @Query("SELECT * from budgets ORDER BY name")
-    fun get(): Flow<List<BudgetWithAccountAndCategories>>
+    fun get(): Flow<List<Budget>>
 
-    @androidx.room.Transaction
-    @Query("SELECT * from budgets WHERE accountId = :accountId ORDER BY name")
-    fun getWithAccountId(accountId: String): Flow<List<BudgetWithAccountAndCategories>>
 }
 
 @Dao
@@ -87,17 +88,23 @@ interface AccountDao {
     @Update
     suspend fun update(account: AccountEntity)
 
+    @Query("UPDATE transactions SET currency = (SELECT currency FROM accounts WHERE id = :id LIMIT 1) WHERE accountId = :id")
+    suspend fun updateTransactionCurrency(id: String)
+
     @Delete
     suspend fun delete(account: AccountEntity)
+
+    @Query("DELETE FROM transactions WHERE accountId = :accountId")
+    suspend fun deleteTransactions(accountId: String)
 
     @Query("SELECT * from accounts WHERE id = :id")
     fun get(id: String): Flow<AccountEntity>
 
     @Query("SELECT accounts.id, name, currency, startAmount, accounts.created, balance FROM accounts INNER JOIN (SELECT a.id, COALESCE(SUM(CASE WHEN t.type = 'Income' THEN t.amount WHEN t.type = 'Expense' THEN -t.amount ELSE 0 END), 0) AS balance FROM accounts AS a LEFT JOIN transactions AS t ON a.id = t.accountId GROUP BY a.id) AS q ON accounts.id = q.id WHERE accounts.id = :id")
-    fun getWithBalance(id: String): Flow<AccountWithBalance>
+    fun getWithBalance(id: String): Flow<Account>
 
     @Query("SELECT accounts.id, name, currency, startAmount, accounts.created, balance FROM accounts INNER JOIN (SELECT a.id, COALESCE(SUM(CASE WHEN t.type = 'Income' THEN t.amount WHEN t.type = 'Expense' THEN -t.amount ELSE 0 END), 0) AS balance FROM accounts AS a LEFT JOIN transactions AS t ON a.id = t.accountId GROUP BY a.id) AS q ON accounts.id = q.id")
-    fun getWithBalance(): Flow<List<AccountWithBalance>>
+    fun getWithBalance(): Flow<List<Account>>
 
     @Query("SELECT * from accounts ORDER BY name")
     fun get(): Flow<List<AccountEntity>>

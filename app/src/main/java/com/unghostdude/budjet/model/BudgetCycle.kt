@@ -1,6 +1,6 @@
 package com.unghostdude.budjet.model
 
-enum class Recurrence {
+enum class BudgetCycle {
     OneTime,
     Daily,
     Weekly,

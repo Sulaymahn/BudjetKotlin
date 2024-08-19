@@ -17,13 +17,14 @@ data class BudgetEntity (
     val accountId: UUID,
     var name: String,
     val amount: Double,
-    val recurrence: Recurrence,
+    val cycleSize: Long,
+    val cycle: BudgetCycle,
     val created: Instant,
-    val start: Instant?,
+    val start: Instant,
     val end: Instant?
 )
 
-data class BudgetWithAccountAndCategories(
+data class Budget(
     @Embedded
     val budget: BudgetEntity,
 
@@ -31,7 +32,7 @@ data class BudgetWithAccountAndCategories(
         parentColumn = "accountId",
         entityColumn = "id"
     )
-    var account: AccountEntity,
+    val account: AccountEntity,
 
     @Relation(
         parentColumn = "id",

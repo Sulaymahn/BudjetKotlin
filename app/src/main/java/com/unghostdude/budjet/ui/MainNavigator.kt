@@ -13,12 +13,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.unghostdude.budjet.ui.account.AccountCreationScreen
+import com.unghostdude.budjet.ui.account.AccountDetailScreen
 import com.unghostdude.budjet.ui.account.AccountScreen
 import com.unghostdude.budjet.ui.budget.BudgetCreationScreen
 import com.unghostdude.budjet.ui.budget.BudgetDetailScreen
 import com.unghostdude.budjet.ui.home.HomeScreen
 import com.unghostdude.budjet.ui.onboarding.AccountSetupScreen
 import com.unghostdude.budjet.ui.onboarding.OnboardingScreen
+import com.unghostdude.budjet.ui.onboarding.UsernameSetupScreen
 import com.unghostdude.budjet.ui.setting.SettingScreen
 import com.unghostdude.budjet.ui.transaction.CreateTransactionScreen
 import com.unghostdude.budjet.ui.transaction.TransactionDetailScreen
@@ -83,23 +85,11 @@ fun MainNavigator(
             }
 
             composable(Screen.Onboarding.route) {
-                OnboardingScreen {
-                    navController.navigate(Screen.AccountSetup.route)
-                }
-            }
-
-            composable(Screen.AccountSetup.route) {
-                if (uiState.account == null) {
-                    AccountSetupScreen {
-                        navController.navigate(Screen.Home.route)
+                OnboardingScreen(
+                    navigateToUsername = {
+                        navController.navigate(Screen.UsernameSetup.route)
                     }
-                } else {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Home.route) {
-                            inclusive = true
-                        }
-                    }
-                }
+                )
             }
 
             composable(Screen.TransactionCreation.route) {
@@ -118,14 +108,28 @@ fun MainNavigator(
                 }
             }
 
-            composable(Screen.AccountCreation.route){
-                if(uiState.account != null){
+            composable(Screen.AccountSetup.route) {
+                if (uiState.account == null) {
+                    AccountSetupScreen {
+                        navController.navigate(Screen.Home.route)
+                    }
+                } else {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
+
+            composable(Screen.AccountCreation.route) {
+                if (uiState.account != null) {
                     AccountCreationScreen(
                         navigateAway = {
                             navController.navigateUp()
                         }
                     )
-                }else{
+                } else {
                     navController.navigate(Screen.AccountSetup.route) {
                         popUpTo(Screen.Home.route) {
                             inclusive = true
@@ -134,10 +138,45 @@ fun MainNavigator(
                 }
             }
 
+            composable(
+                route = Screen.AccountDetail.route,
+                arguments = listOf(navArgument("id") {
+                    type = NavType.StringType
+                })
+            ) {
+                val id = navController.currentBackStackEntry?.arguments?.getString("id") ?: ""
+                AccountDetailScreen(
+                    accountId = id,
+                    navigateAway = {
+                        navController.navigateUp()
+                    }
+                )
+            }
+
+            composable(route = Screen.Account.route) {
+                AccountScreen(
+                    navigateAway = { navController.navigateUp() },
+                    navigateToAccountDetail = { id ->
+                        navController.navigate(Screen.Account.route + "/" + id)
+                    },
+                    navigateToAccountCreation = {
+                        navController.navigate(Screen.AccountCreation.route)
+                    }
+                )
+            }
+
             composable(Screen.Settings.route) {
                 SettingScreen(
                     navigateAway = {
                         navController.navigateUp()
+                    }
+                )
+            }
+
+            composable(Screen.UsernameSetup.route) {
+                UsernameSetupScreen(
+                    navigateToHome = {
+                        navController.navigate(Screen.Home.route)
                     }
                 )
             }
@@ -160,7 +199,6 @@ fun MainNavigator(
             ) {
                 if (uiState.account != null) {
                     BudgetCreationScreen(
-                        account = uiState.account,
                         navigateAway = {
                             navController.navigateUp()
                         }
@@ -184,15 +222,6 @@ fun MainNavigator(
                 BudgetDetailScreen(
                     budgetId = id ?: "",
                     navigateAway = { navController.navigateUp() }
-                )
-            }
-
-            composable(route = Screen.Account.route) {
-                AccountScreen(
-                    navigateAway = { navController.navigateUp() },
-                    navigateToAccountCreation = {
-                        navController.navigate(Screen.AccountCreation.route)
-                    }
                 )
             }
         }

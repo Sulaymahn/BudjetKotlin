@@ -1,4 +1,4 @@
-package com.unghostdude.budjet.viewmodel
+package com.unghostdude.budjet.viewmodel.budget
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

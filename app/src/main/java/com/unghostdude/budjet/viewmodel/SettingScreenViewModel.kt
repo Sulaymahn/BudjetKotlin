@@ -5,14 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.unghostdude.budjet.data.AppSettingRepository
 import com.unghostdude.budjet.data.TransactionRepository
 import com.unghostdude.budjet.model.AppTheme
+import com.unghostdude.budjet.utilities.FormControl
+import com.unghostdude.budjet.utilities.Validators
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
@@ -28,7 +26,6 @@ class SettingScreenViewModel @Inject constructor(
     private val settingRepository: AppSettingRepository,
     private val transactionRepository: TransactionRepository
 ) : ViewModel() {
-
     fun updateUsername(username: String, callback: () -> Unit) {
         viewModelScope.launch {
             settingRepository.setUsername(username)
@@ -53,7 +50,7 @@ class SettingScreenViewModel @Inject constructor(
             )
         )
 
-    fun changeTheme(theme: AppTheme){
+    fun changeTheme(theme: AppTheme) {
         viewModelScope.launch {
             settingRepository.setTheme(theme)
         }
@@ -61,39 +58,43 @@ class SettingScreenViewModel @Inject constructor(
 
     fun exportToCsv(baseDirectory: String, callback: (path: String, file: File) -> Unit) {
         viewModelScope.launch {
-            val dateFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-                .withZone(ZoneId.systemDefault())
+            try {
+                val dateFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                    .withZone(ZoneId.systemDefault())
 
-            val dir = File(
-                baseDirectory,
-                "/exports/csv/"
-            )
+                val dir = File(
+                    baseDirectory,
+                    "/exports/csv/"
+                )
 
-            if (!dir.exists()) {
-                dir.mkdirs()
-            }
+                if (!dir.exists()) {
+                    dir.mkdirs()
+                }
 
-            val file = File(
-                dir,
-                "budjet_${
+                val filename = "budjet_${
                     LocalDateTime.now().format(
-                        DateTimeFormatter.ofPattern("Ld_Hm").withZone(ZoneId.systemDefault())
+                        DateTimeFormatter.ofPattern("Ld_Hm")
                     )
                 }.csv"
-            )
 
-            val transactions = transactionRepository.get().firstOrNull()?.map { t ->
-                "${dateFormatter.format(t.transaction.date)}, ${t.transaction.title}, ${t.transaction.amount}, ${t.transaction.type}, ${t.transaction.currency.currencyCode}, ${t.account.name}"
-            } ?: listOf()
+                val file = File(dir, filename)
 
-            file.createNewFile()
-            val writer = FileWriter(file)
-            writer.appendLine("date, title, amount, type, currency, account name")
-            transactions.forEach {
-                writer.appendLine(it)
+                val transactions = transactionRepository.get().firstOrNull()?.map { t ->
+                    "${dateFormatter.format(t.transaction.date)}, ${t.account.name}, ${t.transaction.title}, ${t.transaction.amount}, ${t.transaction.type}, ${t.transaction.currency.currencyCode}"
+                } ?: listOf()
+
+                file.createNewFile()
+                FileWriter(file).use { writer ->
+                    writer.appendLine("date, account, title, amount, type, currency, ")
+                    transactions.forEach {
+                        writer.appendLine(it)
+                    }
+                }
+
+                callback(file.absolutePath, file)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            writer.close()
-            callback(file.absolutePath, file)
         }
     }
 }

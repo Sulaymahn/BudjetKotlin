@@ -72,6 +72,10 @@ class FormControl(
         isValid = checkValidity()
         updateCallback(isValid)
     }
+
+    fun reset(){
+        setValue("")
+    }
 }
 
 abstract class FormValidator(val errorMessage: String = "") {
@@ -86,7 +90,7 @@ data class ValidationResult(
 sealed class Validators {
     class Required(errorMessage: String = "Field is required") : FormValidator(errorMessage) {
         override fun isValid(value: String): ValidationResult {
-            return if (value.isNotEmpty()) ValidationResult(true, "") else ValidationResult(
+            return if (value.isNotBlank()) ValidationResult(true, "") else ValidationResult(
                 false,
                 errorMessage
             )

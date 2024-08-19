@@ -1,4 +1,4 @@
-package com.unghostdude.budjet.viewmodel
+package com.unghostdude.budjet.viewmodel.account
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,16 +26,13 @@ class AccountSetupScreenViewModel @Inject constructor(
     var state: AccountSetupScreenState by mutableStateOf(
         AccountSetupScreenState.Idle
     )
-    val username = FormControl(
-        validators = listOf(Validators.Required(), Validators.MaxLength(32))
-    )
     val accountName = FormControl(
         validators = listOf(Validators.Required(), Validators.MaxLength(32))
     )
     var currency by mutableStateOf<Currency?>(null)
 
     fun canSetupAccount(): Boolean {
-        return currency != null && username.currentValue.isNotEmpty() && username.isValid && accountName.currentValue.isNotEmpty() && accountName.isValid
+        return currency != null && accountName.peepValidity()
     }
 
     fun setupAccount(onCompleted: () -> Unit = {}) {
@@ -51,7 +48,6 @@ class AccountSetupScreenViewModel @Inject constructor(
             accountRepo.insert(account)
             userData.setFirstTime(false)
             userData.setActiveAccount(account.id)
-            userData.setUsername(username.currentValue.trim())
             onCompleted()
         }
     }

@@ -1,4 +1,4 @@
-package com.unghostdude.budjet.viewmodel
+package com.unghostdude.budjet.viewmodel.account
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.unghostdude.budjet.data.AccountRepository
 import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.utilities.FormControl
-import com.unghostdude.budjet.utilities.FormGroup
 import com.unghostdude.budjet.utilities.Validators
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

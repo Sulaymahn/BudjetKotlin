@@ -1,6 +1,5 @@
 package com.unghostdude.budjet.ui.account
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -14,14 +13,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -33,8 +30,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -43,10 +38,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.R
-import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.model.supportedCurrencies
-import com.unghostdude.budjet.viewmodel.AccountCreationViewModel
-import com.unghostdude.budjet.viewmodel.AccountSetupScreenState
+import com.unghostdude.budjet.viewmodel.account.AccountCreationViewModel
+import java.util.Currency
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,11 +109,6 @@ fun AccountCreationScreen(
                     onValueChange = { newValue ->
                         vm.name.setValue(newValue)
                     },
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-//                        focusManager.moveFocus(FocusDirection.Down)
-                        }
-                    ),
                     isError = !vm.name.isValid,
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Next
@@ -177,6 +166,11 @@ fun AccountCreationScreen(
                     },
                     onValueChange = { newValue ->
                         vm.startingAmount.setValue(newValue)
+                    },
+                    prefix = {
+                        if(vm.currency.peepValidity()){
+                            Text(text = Currency.getInstance(vm.currency.currentValue).symbol)
+                        }
                     },
                     keyboardActions = KeyboardActions(
                         onNext = {

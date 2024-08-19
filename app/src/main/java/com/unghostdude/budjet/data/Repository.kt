@@ -1,17 +1,15 @@
 package com.unghostdude.budjet.data
 
-
-import androidx.room.Query
 import com.unghostdude.budjet.model.AccountEntity
-import com.unghostdude.budjet.model.AccountWithBalance
+import com.unghostdude.budjet.model.Account
 import com.unghostdude.budjet.model.AppTheme
 import com.unghostdude.budjet.model.BudgetEntity
 import com.unghostdude.budjet.model.BudgetCategoryEntity
-import com.unghostdude.budjet.model.BudgetWithAccountAndCategories
+import com.unghostdude.budjet.model.Budget
 import com.unghostdude.budjet.model.CategoryEntity
 import com.unghostdude.budjet.model.TransactionEntity
 import com.unghostdude.budjet.model.TransactionTemplate
-import com.unghostdude.budjet.model.TransactionWithAccountAndCategory
+import com.unghostdude.budjet.model.Transaction
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -19,9 +17,10 @@ interface TransactionRepository {
     suspend fun insert(transaction: TransactionEntity)
     suspend fun update(transaction: TransactionEntity)
     suspend fun delete(transaction: TransactionEntity)
-    fun get(id: String): Flow<TransactionWithAccountAndCategory?>
-    fun get(): Flow<List<TransactionWithAccountAndCategory>>
-    fun getWithAccountId(accountId: String): Flow<List<TransactionWithAccountAndCategory>>
+    fun get(id: String): Flow<Transaction?>
+    fun get(): Flow<List<Transaction>>
+    fun getWithAccountId(accountId: String): Flow<List<Transaction>>
+    fun getWithCategoryId(categoryIds: List<Int>): Flow<List<Transaction>>
 }
 
 interface TransactionTemplateRepository {
@@ -35,12 +34,11 @@ interface TransactionTemplateRepository {
 interface BudgetRepository {
     suspend fun insert(budget: BudgetEntity)
     suspend fun insert(items: List<BudgetCategoryEntity>)
-    suspend fun insert(budget: BudgetEntity, items: List<CategoryEntity>)
+    suspend fun insert(budget: BudgetEntity, categoryIds: List<Int>)
     suspend fun update(budget: BudgetEntity)
     suspend fun delete(budget: BudgetEntity)
-    fun get(id: String): Flow<BudgetWithAccountAndCategories?>
-    fun get(): Flow<List<BudgetWithAccountAndCategories>>
-    fun getWithAccountId(id: String): Flow<List<BudgetWithAccountAndCategories>>
+    fun get(id: String): Flow<Budget?>
+    fun get(): Flow<List<Budget>>
 }
 
 interface AccountRepository {
@@ -48,8 +46,8 @@ interface AccountRepository {
     suspend fun update(account: AccountEntity)
     suspend fun delete(account: AccountEntity)
     fun get(id: UUID): Flow<AccountEntity?>
-    fun getWithBalance(id: UUID): Flow<AccountWithBalance>
-    fun getWithBalance(): Flow<List<AccountWithBalance>>
+    fun getWithBalance(id: UUID): Flow<Account>
+    fun getWithBalance(): Flow<List<Account>>
     fun get(): Flow<List<AccountEntity>>
     fun getFirst(): Flow<AccountEntity?>
 }

@@ -1,4 +1,4 @@
-package com.unghostdude.budjet.viewmodel
+package com.unghostdude.budjet.viewmodel.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

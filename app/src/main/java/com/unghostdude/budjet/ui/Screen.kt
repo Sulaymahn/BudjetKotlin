@@ -9,6 +9,7 @@ sealed class Screen(
     data object Dashboard : Screen("dashboard", "Budjet")
     data object Analytic : Screen("analytics", "Analytics")
     data object Settings : Screen("settings", "Settings")
+    data object UsernameSetup : Screen("username", "Settings")
 
     data object Transaction : Screen("transactions", "Transactions")
     data object TransactionCreation : Screen("transaction/create", "Transaction")

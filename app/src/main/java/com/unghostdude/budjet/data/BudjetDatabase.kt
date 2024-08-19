@@ -26,16 +26,6 @@ class Converters {
     }
 
     @TypeConverter
-    fun stringToCategories(value: String): List<String> {
-        return value.split(',')
-    }
-
-    @TypeConverter
-    fun categoriesToString(value: List<String>): String {
-        return value.joinToString(",")
-    }
-
-    @TypeConverter
     fun stringToUuids(value: String): List<UUID> {
         return value.split(',').map {
             UUID.fromString(it)

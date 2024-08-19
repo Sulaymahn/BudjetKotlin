@@ -1,6 +1,5 @@
 package com.unghostdude.budjet.model
 
-import android.accounts.Account
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -33,7 +32,7 @@ data class TransactionEntity(
     val lastModified: Instant
 )
 
-data class TransactionWithAccountAndCategory(
+data class Transaction(
     @Embedded
     val transaction: TransactionEntity,
 
@@ -48,26 +47,4 @@ data class TransactionWithAccountAndCategory(
         entityColumn = "id"
     )
     val category: CategoryEntity
-)
-
-data class TransactionForCard(
-    val id: String,
-    val title: String?,
-    val currency: Currency,
-    val amount: Double,
-    val type: TransactionType,
-    val categoryName: String?,
-    val icon: String?,
-    val color: Long?,
-    val date: Instant
-)
-
-data class TransactionForDetail(
-    val title: String?,
-    val currency: Currency,
-    val amount: Double,
-    val type: TransactionType,
-    val categoryName: String,
-    val note: String?,
-    val date: Instant
 )

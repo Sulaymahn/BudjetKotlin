@@ -1,4 +1,4 @@
-package com.unghostdude.budjet.viewmodel
+package com.unghostdude.budjet.viewmodel.transaction
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class TransactionDetailScreenViewModel @Inject constructor(
+class TransactionDetailViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) : ViewModel() {
     private var fetching = MutableStateFlow<String?>(null)

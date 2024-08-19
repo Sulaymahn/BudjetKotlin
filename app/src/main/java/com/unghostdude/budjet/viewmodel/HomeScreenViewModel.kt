@@ -8,15 +8,8 @@ import com.unghostdude.budjet.data.TransactionRepository
 import com.unghostdude.budjet.model.AccountEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileWriter
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import javax.inject.Inject
 
 @HiltViewModel

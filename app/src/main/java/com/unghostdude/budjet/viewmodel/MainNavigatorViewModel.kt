@@ -23,9 +23,20 @@ class MainNavigatorViewModel @Inject constructor(
         userRepo.isFirstTime,
         accountRepo.get()
     ) { accountId, username, balance, firstTime, accounts ->
-        val acc = accounts.firstOrNull {
+        var acc = accounts.firstOrNull {
             it.id == accountId
         }
+
+        if(acc == null){
+            try{
+                acc = accounts.first()
+                userRepo.setActiveAccount(acc.id)
+            }
+            catch (_: Exception){
+
+            }
+        }
+
         MainNavigatorState.Idle(
             account = acc,
             username = username,

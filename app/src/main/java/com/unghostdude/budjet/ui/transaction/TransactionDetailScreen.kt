@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.R
-import com.unghostdude.budjet.viewmodel.TransactionDetailScreenViewModel
+import com.unghostdude.budjet.viewmodel.transaction.TransactionDetailViewModel
 import java.text.NumberFormat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -39,13 +37,14 @@ import java.time.format.FormatStyle
 fun TransactionDetailScreen(
     transactionId: String,
     navigatorAway: () -> Unit,
-    vm: TransactionDetailScreenViewModel = hiltViewModel<TransactionDetailScreenViewModel>()
+    vm: TransactionDetailViewModel = hiltViewModel<TransactionDetailViewModel>()
 ) {
-    LaunchedEffect(Unit) {
+    val transaction by vm.transaction.collectAsState()
+
+    LaunchedEffect(transactionId) {
         vm.fetch(transactionId)
     }
 
-    val transaction by vm.transaction.collectAsState()
     val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
         .withZone(ZoneId.systemDefault())
 

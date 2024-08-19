@@ -1,25 +1,22 @@
 package com.unghostdude.budjet.ui.setting
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -27,9 +24,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -201,7 +198,19 @@ fun SettingScreen(
                 },
                 modifier = Modifier
                     .clickable {
+                        val intent = Intent(Intent.ACTION_SENDTO)
+                        intent.data = Uri.parse("mailto:sulaymahn28@gmail.com")
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "Budjet App - Feedback")
+                        try {
+                            context.startActivity(
+                                Intent.createChooser(
+                                    intent,
+                                    "Send feedback"
+                                )
+                            )
+                        } catch (_: Exception) {
 
+                        }
                     }
             )
 
@@ -281,20 +290,20 @@ fun SettingScreen(
                         modifier = Modifier
                             .padding(20.dp)
                     ) {
-                        Text(text = "Username")
-                        TextField(
+
+                        OutlinedTextField(
                             value = username,
                             onValueChange = { newValue ->
                                 username = newValue
                             },
+                            label = {
+                                Text(text = "Username")
+                            },
+                            isError = username.text.isBlank(),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Done
-                            ),
-                            colors = TextFieldDefaults.colors().copy(
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -313,12 +322,14 @@ fun SettingScreen(
 
                             Spacer(modifier = Modifier.width(12.dp))
 
-                            Button(onClick = {
-                                vm.updateUsername(
-                                    username = username.text.trim(),
-                                    callback = { currentDialog = SettingsScreenDialog.None }
-                                )
-                            }) {
+                            Button(
+                                enabled = username.text.isNotBlank(),
+                                onClick = {
+                                    vm.updateUsername(
+                                        username = username.text.trim(),
+                                        callback = { currentDialog = SettingsScreenDialog.None }
+                                    )
+                                }) {
                                 Text(text = "Okay")
                             }
                         }

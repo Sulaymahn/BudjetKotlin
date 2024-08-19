@@ -60,9 +60,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.R
-import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.model.TransactionType
-import com.unghostdude.budjet.viewmodel.CreateTransactionScreenViewModel
+import com.unghostdude.budjet.viewmodel.transaction.CreateTransactionScreenViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -398,7 +397,9 @@ fun CreateTransactionScreen(
                             Text(text = "Amount*")
                         },
                         prefix = {
-                            Text(text = vm.account?.currency?.symbol ?: "")
+                            if(vm.account != null){
+                                Text(text = vm.account?.currency?.symbol ?: "")
+                            }
                         },
                         singleLine = true,
                         onValueChange = { newValue ->
@@ -422,7 +423,6 @@ fun CreateTransactionScreen(
                             keyboardType = KeyboardType.NumberPassword,
                             imeAction = ImeAction.Next
                         ),
-                        enabled = vm.account != null,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()

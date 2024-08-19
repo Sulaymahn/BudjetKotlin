@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -29,16 +32,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.R
-import com.unghostdude.budjet.model.AccountEntity
-import com.unghostdude.budjet.model.AccountWithBalance
+import com.unghostdude.budjet.model.Account
 import com.unghostdude.budjet.viewmodel.DashboardScreenViewModel
-import java.text.NumberFormat
 
 @Composable
 fun DashboardScreen(
@@ -70,14 +70,15 @@ fun DashboardScreen(
         AccountsCard(
             accounts = accounts,
             navigateToAccountScreen = navigateToAccountScreen,
-            formatter = currencyFormatter)
+            formatter = currencyFormatter
+        )
     }
 }
 
 @Composable
 fun SelectedAccountBalanceCard(
     username: String,
-    account: AccountWithBalance?,
+    account: Account?,
     formatter: LocalizedNumberFormatter,
     switchSelectedAccount: () -> Unit
 ) {
@@ -120,7 +121,7 @@ fun SelectedAccountBalanceCard(
                         Text(
                             text = formatter
                                 .unit(Currency.getInstance(account.currency.currencyCode))
-                                .format(account.balance)
+                                .format(account.balance + account.startAmount)
                                 .toString(),
                             style = MaterialTheme.typography.displaySmall,
                             fontWeight = FontWeight.SemiBold
@@ -143,7 +144,7 @@ fun SelectedAccountBalanceCard(
 
 @Composable
 fun AccountsCard(
-    accounts: List<AccountWithBalance>,
+    accounts: List<Account>,
     formatter: LocalizedNumberFormatter,
     navigateToAccountScreen: () -> Unit
 ) {
@@ -160,12 +161,23 @@ fun AccountsCard(
             modifier = Modifier
                 .padding(16.dp)
         ) {
-            Text(
-                text = "Accounts",
-                style = MaterialTheme.typography.titleMedium
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Accounts",
+                    style = MaterialTheme.typography.titleMedium
+                )
 
-            repeat(accounts.size) { i ->
+                Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+
+            repeat(accounts.take(3).size) { i ->
                 val account = accounts[i]
 
                 Row(
