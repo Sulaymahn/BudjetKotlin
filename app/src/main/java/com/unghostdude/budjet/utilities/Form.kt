@@ -41,10 +41,10 @@ class FormControl(
     var errors by mutableStateOf(listOf<String>())
     var currentValue by mutableStateOf(initialValue)
     var isValid by mutableStateOf(
-        if(validateOnInitializing) checkValidity() else true
+        if (validateOnInitializing) checkValidity() else true
     )
 
-    fun peepValidity() : Boolean{
+    fun peepValidity(): Boolean {
         validators.forEach { validator ->
             val res = validator.isValid(currentValue)
             if (!res.valid) {
@@ -73,7 +73,11 @@ class FormControl(
         updateCallback(isValid)
     }
 
-    fun reset(){
+    fun getValue(): String {
+        return currentValue
+    }
+
+    fun reset() {
         setValue("")
     }
 }
@@ -109,7 +113,10 @@ sealed class Validators {
         }
     }
 
-    class MaxLength(private val max: Int, errorMessage: String = "Must be less than $max characters") : FormValidator(errorMessage) {
+    class MaxLength(
+        private val max: Int,
+        errorMessage: String = "Must be less than $max characters"
+    ) : FormValidator(errorMessage) {
         override fun isValid(value: String): ValidationResult {
             return if (value.length < max) ValidationResult(true, "") else ValidationResult(
                 false,

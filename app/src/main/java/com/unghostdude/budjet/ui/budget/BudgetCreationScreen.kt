@@ -82,7 +82,6 @@ fun BudgetCreationScreen(
                 },
                 navigationIcon = {
                     IconButton(
-
                         onClick = {
                             navigateAway()
                         }
@@ -98,7 +97,7 @@ fun BudgetCreationScreen(
                         enabled = vm.canCreateBudget(),
                         onClick = {
                             vm.createBudget(
-                                selectedCategories = if (selectedCategories.isEmpty()) categories.map { it.id } else selectedCategories,
+                                selectedCategories = selectedCategories.ifEmpty { categories.map { it.id } },
                                 callback = navigateAway
                             )
                         }
@@ -243,7 +242,7 @@ fun BudgetCreationScreen(
                 ) {
                     if (vm.cycle != BudgetCycle.OneTime) {
                         var cycleSize by remember {
-                            mutableStateOf("")
+                            mutableStateOf(vm.cycleSize.toString())
                         }
 
                         OutlinedTextField(
@@ -253,9 +252,9 @@ fun BudgetCreationScreen(
                             },
                             singleLine = true,
                             onValueChange = { newValue ->
-                                val n = newValue.toLongOrNull()
-                                if (n != null && n > 0) {
-                                    vm.cycleSize = n
+                                if (!newValue.startsWith("0") && newValue.length < 8) {
+                                    val n = newValue.toLongOrNull()
+                                    vm.cycleSize = n ?: 0
                                     cycleSize = newValue
                                 }
                             },
@@ -264,6 +263,7 @@ fun BudgetCreationScreen(
                                     focusManager.moveFocus(FocusDirection.Right)
                                 }
                             ),
+                            isError = vm.cycleSize < 1,
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.NumberPassword,
                                 imeAction = ImeAction.Next

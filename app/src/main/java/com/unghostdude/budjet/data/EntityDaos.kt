@@ -15,6 +15,7 @@ import com.unghostdude.budjet.model.TransactionEntity
 import com.unghostdude.budjet.model.TransactionTemplate
 import com.unghostdude.budjet.model.Transaction
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 @Dao
 interface TransactionDao {
@@ -50,25 +51,45 @@ interface BudgetDao {
     suspend fun insert(budget: BudgetEntity)
 
     @Insert
+    suspend fun insert(budget: BudgetCategoryEntity)
+
+    @Insert
     suspend fun insert(items: List<BudgetCategoryEntity>)
 
     @androidx.room.Transaction
     suspend fun insert(budget: BudgetEntity, categoryIds: List<Int>) {
         insert(budget)
-        val i = categoryIds.map { item ->
+        val ids = categoryIds.map { id ->
             BudgetCategoryEntity(
                 budgetId = budget.id,
-                categoryId = item
+                categoryId = id
             )
         }
-        insert(i)
+        insert(ids)
     }
 
     @Update
     suspend fun update(budget: BudgetEntity)
 
+    @androidx.room.Transaction
+    suspend fun update(budget: BudgetEntity, categories: List<Int>) {
+        update(budget)
+        val ids = categories.map { id ->
+            BudgetCategoryEntity(
+                budgetId = budget.id,
+                categoryId = id
+            )
+        }
+
+        deleteCategories(budget.id)
+        insert(ids)
+    }
+
     @Delete
     suspend fun delete(budget: BudgetEntity)
+
+    @Query("DELETE FROM budget_category WHERE budgetId = :budgetId")
+    suspend fun deleteCategories(budgetId: UUID)
 
     @androidx.room.Transaction
     @Query("SELECT * from budgets WHERE id = :id")

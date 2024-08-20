@@ -24,19 +24,7 @@ class Converters {
     fun currencyToString(value: Currency): String {
         return value.currencyCode
     }
-
-    @TypeConverter
-    fun stringToUuids(value: String): List<UUID> {
-        return value.split(',').map {
-            UUID.fromString(it)
-        }
-    }
-
-    @TypeConverter
-    fun uuidsToString(value: List<UUID?>): String {
-        return value.joinToString(",")
-    }
-
+    
     @TypeConverter
     fun stringToUuid(value: String?): UUID? {
         return try {

@@ -22,8 +22,8 @@ data class TransactionEntity(
     val type: TransactionType,
     val conversionRate: Double?,
     val amount: Double,
-    val title: String?,
-    val note: String?,
+    val title: String,
+    val note: String,
     @ColumnInfo(index = true)
     val categoryId: Int,
     val date: Instant,

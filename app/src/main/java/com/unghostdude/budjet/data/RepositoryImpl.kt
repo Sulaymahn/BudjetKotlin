@@ -65,6 +65,7 @@ class RoomBudgetRepository(private val dao: BudgetDao) :
     override suspend fun insert(items: List<BudgetCategoryEntity>) = dao.insert(items)
     override suspend fun insert(budget: BudgetEntity, categoryIds: List<Int>) = dao.insert(budget, categoryIds)
     override suspend fun update(budget: BudgetEntity) = dao.update(budget)
+    override suspend fun update(budget: BudgetEntity, categoryIds: List<Int>) = dao.update(budget, categoryIds)
     override suspend fun delete(budget: BudgetEntity) = dao.delete(budget)
     override fun get(id: String): Flow<Budget> = dao.get(id)
     override fun get(): Flow<List<Budget>> = dao.get()

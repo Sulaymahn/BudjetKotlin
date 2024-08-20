@@ -36,6 +36,7 @@ interface BudgetRepository {
     suspend fun insert(items: List<BudgetCategoryEntity>)
     suspend fun insert(budget: BudgetEntity, categoryIds: List<Int>)
     suspend fun update(budget: BudgetEntity)
+    suspend fun update(budget: BudgetEntity, categoryIds: List<Int>)
     suspend fun delete(budget: BudgetEntity)
     fun get(id: String): Flow<Budget?>
     fun get(): Flow<List<Budget>>

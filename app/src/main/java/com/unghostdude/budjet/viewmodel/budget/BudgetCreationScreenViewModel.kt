@@ -7,7 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.unghostdude.budjet.data.AccountRepository
+import com.unghostdude.budjet.data.AppSettingRepository
 import com.unghostdude.budjet.data.BudgetRepository
 import com.unghostdude.budjet.data.CategoryRepository
 import com.unghostdude.budjet.model.AccountEntity
@@ -18,6 +21,9 @@ import com.unghostdude.budjet.utilities.FormControl
 import com.unghostdude.budjet.utilities.Validators
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -29,13 +35,24 @@ import javax.inject.Inject
 class BudgetCreationScreenViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val budgetRepository: BudgetRepository,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val settingRepository: AppSettingRepository
 ) : ViewModel() {
     val categories = categoryRepository.get().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = listOf()
     )
+
+    val selectedAccount = settingRepository.activeAccount
+        .filterNotNull()
+        .map { selectedAccountId ->
+            accountRepository.get(selectedAccountId)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = null
+        )
 
     val accounts = accountRepository.get().stateIn(
         scope = viewModelScope,
@@ -45,7 +62,7 @@ class BudgetCreationScreenViewModel @Inject constructor(
 
     val name = FormControl(validators = listOf(Validators.Required(), Validators.MinLength(3)))
     var amount: Double? by mutableStateOf(null)
-    var cycleSize by mutableLongStateOf(0)
+    var cycleSize by mutableLongStateOf(1)
     var cycle by mutableStateOf<BudgetCycle?>(null)
     var account by mutableStateOf<AccountEntity?>(null)
 

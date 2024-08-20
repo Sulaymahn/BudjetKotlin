@@ -1,5 +1,9 @@
 package com.unghostdude.budjet.ui.transaction
 
+import android.icu.number.Notation
+import android.icu.number.NumberFormatter
+import android.icu.util.Currency
+import android.icu.util.ULocale
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -23,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.unghostdude.budjet.model.TransactionType
 import com.unghostdude.budjet.viewmodel.transaction.TransactionsScreenViewModel
 import java.time.LocalDate
 import java.time.ZoneId
@@ -37,11 +42,13 @@ fun TransactionScreen(
 ) {
     val transactionGroups by vm.transactions.collectAsState()
 
-    val dateTimeFormatter =
-        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault())
-
     val dateFormatter =
         DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withZone(ZoneId.systemDefault())
+
+    val currencyFormatter =
+        NumberFormatter
+            .withLocale(ULocale.getDefault())
+            .notation(Notation.compactShort())
 
     if (transactionGroups.isNotEmpty()) {
         LazyColumn(
@@ -72,13 +79,24 @@ fun TransactionScreen(
                 items(items = transactionGroups[index].transactions) { transaction ->
                     ListItem(
                         headlineContent = {
-                            Text(text = transaction.category.name)
+                            if (transaction.transaction.title.isNotBlank()) {
+                                Text(text = "${transaction.transaction.title} - ${transaction.category.name}")
+                            } else {
+                                Text(text = transaction.category.name)
+                            }
+
                         },
                         supportingContent = {
                             Text(text = transaction.account.name)
                         },
                         trailingContent = {
-                            Text(text = "${transaction.transaction.currency.symbol} ${transaction.transaction.amount}")
+                            Text(
+                                text = currencyFormatter
+                                    .unit(Currency.getInstance(transaction.transaction.currency.currencyCode))
+                                    .format(if (transaction.transaction.type == TransactionType.Income) transaction.transaction.amount else (-transaction.transaction.amount))
+                                    .toString(),
+                                color = if (transaction.transaction.type == TransactionType.Expense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                            )
                         },
                         modifier = Modifier
                             .fillMaxWidth()

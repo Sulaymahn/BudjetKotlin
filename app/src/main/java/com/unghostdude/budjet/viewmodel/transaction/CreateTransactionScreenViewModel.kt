@@ -67,7 +67,7 @@ class CreateTransactionScreenViewModel @Inject constructor(
                 categoryId = category!!.id,
                 created = LocalDateTime.now().toInstant(ZoneOffset.UTC),
                 lastModified = LocalDateTime.now().toInstant(ZoneOffset.UTC),
-                note = note.currentValue.ifBlank { null },
+                note = note.currentValue,
                 conversionRate = null,
                 destinationAccountId = null,
                 title = title.currentValue,

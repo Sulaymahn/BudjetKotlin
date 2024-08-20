@@ -58,9 +58,9 @@ class BudgetScreenViewModel @Inject constructor(
 
         return when (cycle) {
             BudgetCycle.Daily -> transactionDate.isAfter(now.minus(period, ChronoUnit.DAYS))
-            BudgetCycle.Weekly -> transactionDate.isAfter(now.minus(1, ChronoUnit.WEEKS))
-            BudgetCycle.Monthly -> transactionDate.isAfter(now.minus(1, ChronoUnit.MONTHS))
-            BudgetCycle.Yearly -> transactionDate.isAfter(now.minus(1, ChronoUnit.YEARS))
+            BudgetCycle.Weekly -> transactionDate.isAfter(now.minus(period, ChronoUnit.WEEKS))
+            BudgetCycle.Monthly -> transactionDate.isAfter(now.minus(period, ChronoUnit.MONTHS))
+            BudgetCycle.Yearly -> transactionDate.isAfter(now.minus(period, ChronoUnit.YEARS))
             else -> true
         }
     }

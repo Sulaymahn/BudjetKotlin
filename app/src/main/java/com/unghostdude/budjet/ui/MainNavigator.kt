@@ -187,10 +187,10 @@ fun MainNavigator(
                     type = NavType.StringType
                 })
             ) {
-                val id = navController.currentBackStackEntry?.arguments?.getString("id")
+                val id = navController.currentBackStackEntry?.arguments?.getString("id") ?: ""
                 TransactionDetailScreen(
-                    transactionId = id ?: "",
-                    navigatorAway = { navController.navigateUp() }
+                    transactionId = id,
+                    navigateAway = { navController.navigateUp() }
                 )
             }
 

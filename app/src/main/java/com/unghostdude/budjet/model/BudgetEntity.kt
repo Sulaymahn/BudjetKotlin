@@ -7,10 +7,11 @@ import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import java.time.Instant
+import java.util.Currency
 import java.util.UUID
 
 @Entity("budgets")
-data class BudgetEntity (
+data class BudgetEntity(
     @PrimaryKey
     @ColumnInfo(index = true)
     val id: UUID,
@@ -44,4 +45,12 @@ data class Budget(
         )
     )
     var categories: List<CategoryEntity>
+)
+
+data class BudgetForUpdate(
+    val name: String,
+    val accountId: UUID,
+    val cycleSize: Long,
+    val cycle: BudgetCycle,
+    var categories: List<Int>
 )
