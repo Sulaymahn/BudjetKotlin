@@ -66,7 +66,7 @@ fun MainNavigator(
                             navController.navigate(Screen.Settings.route)
                         },
                         navigateToTransactionDetailScreen = { id ->
-                            navController.navigate(Screen.Transaction.route + "/" + id)
+                            navController.navigate(Screen.Transactions.route + "/" + id)
                         },
                         navigateToTransactionCreationScreen = {
                             navController.navigate(Screen.TransactionCreation.route)

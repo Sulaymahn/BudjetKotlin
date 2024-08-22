@@ -8,28 +8,11 @@ import com.unghostdude.budjet.model.BudgetCategoryEntity
 import com.unghostdude.budjet.model.Budget
 import com.unghostdude.budjet.model.CategoryEntity
 import com.unghostdude.budjet.model.TransactionEntity
-import com.unghostdude.budjet.model.TransactionTemplate
+import com.unghostdude.budjet.model.DetailedTransaction
 import com.unghostdude.budjet.model.Transaction
+import com.unghostdude.budjet.model.TransactionForCreation
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
-
-interface TransactionRepository {
-    suspend fun insert(transaction: TransactionEntity)
-    suspend fun update(transaction: TransactionEntity)
-    suspend fun delete(transaction: TransactionEntity)
-    fun get(id: String): Flow<Transaction?>
-    fun get(): Flow<List<Transaction>>
-    fun getWithAccountId(accountId: String): Flow<List<Transaction>>
-    fun getWithCategoryId(categoryIds: List<Int>): Flow<List<Transaction>>
-}
-
-interface TransactionTemplateRepository {
-    suspend fun insert(template: TransactionTemplate)
-    suspend fun update(template: TransactionTemplate)
-    suspend fun delete(template: TransactionTemplate)
-    fun get(id: String): Flow<TransactionTemplate?>
-    fun get(): Flow<List<TransactionTemplate>>
-}
 
 interface BudgetRepository {
     suspend fun insert(budget: BudgetEntity)
@@ -61,7 +44,7 @@ interface CategoryRepository {
     fun get(): Flow<List<CategoryEntity>>
 }
 
-interface AnalyticRepository{
+interface AnalyticRepository {
     fun getTotalIncome(): Flow<Int>
     fun getTotalExpense(): Flow<Int>
     fun getTotalBalance(): Flow<Int>
@@ -70,10 +53,10 @@ interface AnalyticRepository{
 
 interface AppSettingRepository {
     val username: Flow<String>
-    val isFirstTime : Flow<Boolean>
+    val isFirstTime: Flow<Boolean>
     val theme: Flow<AppTheme>
     val showBalance: Flow<Boolean>
-    val activeAccount : Flow<UUID?>
+    val activeAccount: Flow<UUID?>
     suspend fun setActiveAccount(id: UUID)
     suspend fun setFirstTime(value: Boolean)
     suspend fun setUsername(username: String)

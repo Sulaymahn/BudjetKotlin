@@ -5,24 +5,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.unghostdude.budjet.contract.TransactionRepository
 import com.unghostdude.budjet.data.AccountRepository
 import com.unghostdude.budjet.data.AppSettingRepository
 import com.unghostdude.budjet.data.CategoryRepository
-import com.unghostdude.budjet.data.TransactionRepository
 import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.model.CategoryEntity
-import com.unghostdude.budjet.model.TransactionEntity
+import com.unghostdude.budjet.model.TransactionForCreation
 import com.unghostdude.budjet.model.TransactionType
 import com.unghostdude.budjet.utilities.FormControl
 import javax.inject.Inject;
-
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.util.UUID
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @HiltViewModel
 class CreateTransactionScreenViewModel @Inject constructor(
@@ -47,7 +46,7 @@ class CreateTransactionScreenViewModel @Inject constructor(
     var account by mutableStateOf<AccountEntity?>(null)
     var category by mutableStateOf<CategoryEntity?>(null)
     var transactionType by mutableStateOf(TransactionType.Expense)
-    var date by mutableStateOf<LocalDateTime>(LocalDateTime.now())
+    var date by mutableStateOf<ZonedDateTime>(ZonedDateTime.now())
     var amount: Double? by mutableStateOf(null)
     var note = FormControl()
     var title = FormControl()
@@ -58,24 +57,19 @@ class CreateTransactionScreenViewModel @Inject constructor(
 
     fun createTransaction(onCreated: () -> Unit) {
         viewModelScope.launch {
-            val transaction = TransactionEntity(
-                id = UUID.randomUUID(),
-                accountId = account!!.id,
-                type = transactionType,
-                amount = amount!!,
-                date = date.toInstant(ZoneOffset.UTC),
-                categoryId = category!!.id,
-                created = LocalDateTime.now().toInstant(ZoneOffset.UTC),
-                lastModified = LocalDateTime.now().toInstant(ZoneOffset.UTC),
-                note = note.currentValue,
-                conversionRate = null,
-                destinationAccountId = null,
-                title = title.currentValue,
-                dueDate = null,
-                currency = account!!.currency
+            transactionRepository.insert(
+                TransactionForCreation(
+                    account = account!!,
+                    destinationAccount = null,
+                    amount = amount!!,
+                    type = transactionType,
+                    title = title.currentValue,
+                    note = note.currentValue,
+                    category = category!!,
+                    date = date,
+                    dueDate = null
+                )
             )
-
-            transactionRepository.insert(transaction)
             onCreated()
         }
     }

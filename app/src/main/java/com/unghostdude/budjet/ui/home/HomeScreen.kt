@@ -65,10 +65,10 @@ fun HomeScreen(
     val navController = rememberNavController()
     val navState = navController.currentBackStackEntryAsState()
     val accounts by vm.accounts.collectAsState()
-    val context = LocalContext.current
+
     val currentScreen = when (navState.value?.destination?.route) {
         Screen.Budget.route -> Screen.Budget
-        Screen.Transaction.route -> Screen.Transaction
+        Screen.Transactions.route -> Screen.Transactions
         Screen.Analytic.route -> Screen.Analytic
         else -> Screen.Dashboard
     }
@@ -106,7 +106,7 @@ fun HomeScreen(
             if (currentScreen != Screen.Analytic) {
                 FloatingActionButton(
                     onClick = {
-                        if (currentScreen == Screen.Transaction || currentScreen == Screen.Dashboard) {
+                        if (currentScreen == Screen.Transactions || currentScreen == Screen.Dashboard) {
                             navigateToTransactionCreationScreen()
                         } else if (currentScreen == Screen.Budget) {
                             navigateToBudgetCreationScreen()
@@ -207,14 +207,14 @@ fun HomeScreen(
                 )
 
                 NavigationBarItem(
-                    selected = currentScreen == Screen.Transaction,
+                    selected = currentScreen == Screen.Transactions,
                     onClick = {
-                        if (currentScreen != Screen.Transaction) {
-                            navController.navigate(Screen.Transaction.route)
+                        if (currentScreen != Screen.Transactions) {
+                            navController.navigate(Screen.Transactions.route)
                         }
                     },
                     icon = {
-                        if (currentScreen == Screen.Transaction) {
+                        if (currentScreen == Screen.Transactions) {
                             Icon(
                                 painter = painterResource(R.drawable.baseline_article),
                                 contentDescription = null
@@ -227,7 +227,7 @@ fun HomeScreen(
                         }
                     },
                     label = {
-                        Text(text = Screen.Transaction.title)
+                        Text(text = Screen.Transactions.title)
                     },
                     colors = barItemColors
                 )
@@ -254,7 +254,7 @@ fun HomeScreen(
                 AnalyticScreen()
             }
 
-            composable(Screen.Transaction.route) {
+            composable(Screen.Transactions.route) {
                 TransactionScreen(
                     navigateToTransactionDetail = navigateToTransactionDetailScreen
                 )

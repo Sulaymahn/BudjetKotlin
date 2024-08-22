@@ -79,8 +79,8 @@ fun TransactionScreen(
                 items(items = transactionGroups[index].transactions) { transaction ->
                     ListItem(
                         headlineContent = {
-                            if (transaction.transaction.title.isNotBlank()) {
-                                Text(text = "${transaction.transaction.title} - ${transaction.category.name}")
+                            if (transaction.title.isNotBlank()) {
+                                Text(text = "${transaction.title} - ${transaction.category.name}")
                             } else {
                                 Text(text = transaction.category.name)
                             }
@@ -92,17 +92,17 @@ fun TransactionScreen(
                         trailingContent = {
                             Text(
                                 text = currencyFormatter
-                                    .unit(Currency.getInstance(transaction.transaction.currency.currencyCode))
-                                    .format(if (transaction.transaction.type == TransactionType.Income) transaction.transaction.amount else (-transaction.transaction.amount))
+                                    .unit(Currency.getInstance(transaction.currency.currencyCode))
+                                    .format(transaction.amount)
                                     .toString(),
-                                color = if (transaction.transaction.type == TransactionType.Expense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                                color = if (transaction.type == TransactionType.Expense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                             )
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .combinedClickable(
                                 onClick = {
-                                    navigateToTransactionDetail(transaction.transaction.id.toString())
+                                    navigateToTransactionDetail(transaction.id.toString())
                                 },
                                 onLongClick = {
 

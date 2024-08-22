@@ -2,23 +2,21 @@ package com.unghostdude.budjet.viewmodel.budget
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.unghostdude.budjet.contract.TransactionRepository
 import com.unghostdude.budjet.data.BudgetRepository
-import com.unghostdude.budjet.data.TransactionRepository
 import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.model.Budget
 import com.unghostdude.budjet.model.BudgetCycle
 import com.unghostdude.budjet.model.BudgetEntity
-import com.unghostdude.budjet.model.TransactionEntity
+import com.unghostdude.budjet.model.Transaction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import java.time.Instant
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,9 +33,11 @@ class BudgetScreenViewModel @Inject constructor(
                     transaction.account.id == budget.account.id && transaction.category.id in budget.categories.map { it.id }
                 }
                 .filter { transaction ->
-                    isTransactionInBudgetCycle(transaction.transaction, budget.budget.cycleSize, budget.budget.cycle)
-                }.map { transaction ->
-                    transaction.transaction
+                    isTransactionInBudgetCycle(
+                        transaction,
+                        budget.budget.cycleSize,
+                        budget.budget.cycle
+                    )
                 }
 
             calculateBudget(budget, filteredTransactions)
@@ -49,25 +49,24 @@ class BudgetScreenViewModel @Inject constructor(
     )
 
     private fun isTransactionInBudgetCycle(
-        transaction: TransactionEntity,
+        transaction: Transaction,
         period: Long,
         cycle: BudgetCycle
     ): Boolean {
-        val now = LocalDateTime.now()
-        val transactionDate = LocalDateTime.ofInstant(transaction.date, ZoneId.systemDefault())
+        val now = ZonedDateTime.now(ZoneId.systemDefault())
 
         return when (cycle) {
-            BudgetCycle.Daily -> transactionDate.isAfter(now.minus(period, ChronoUnit.DAYS))
-            BudgetCycle.Weekly -> transactionDate.isAfter(now.minus(period, ChronoUnit.WEEKS))
-            BudgetCycle.Monthly -> transactionDate.isAfter(now.minus(period, ChronoUnit.MONTHS))
-            BudgetCycle.Yearly -> transactionDate.isAfter(now.minus(period, ChronoUnit.YEARS))
+            BudgetCycle.Daily -> transaction.date.isAfter(now.minus(period, ChronoUnit.DAYS))
+            BudgetCycle.Weekly -> transaction.date.isAfter(now.minus(period, ChronoUnit.WEEKS))
+            BudgetCycle.Monthly -> transaction.date.isAfter(now.minus(period, ChronoUnit.MONTHS))
+            BudgetCycle.Yearly -> transaction.date.isAfter(now.minus(period, ChronoUnit.YEARS))
             else -> true
         }
     }
 
     private fun calculateBudget(
         budget: Budget,
-        transactions: List<TransactionEntity>
+        transactions: List<Transaction>
     ): BudgetForView {
         val totalSpent = transactions.sumOf { it.amount }
         return BudgetForView(

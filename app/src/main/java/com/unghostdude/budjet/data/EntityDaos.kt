@@ -12,8 +12,7 @@ import com.unghostdude.budjet.model.BudgetCategoryEntity
 import com.unghostdude.budjet.model.Budget
 import com.unghostdude.budjet.model.CategoryEntity
 import com.unghostdude.budjet.model.TransactionEntity
-import com.unghostdude.budjet.model.TransactionTemplate
-import com.unghostdude.budjet.model.Transaction
+import com.unghostdude.budjet.model.DetailedTransaction
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -30,19 +29,19 @@ interface TransactionDao {
 
     @androidx.room.Transaction
     @Query("SELECT * FROM transactions WHERE id = :id LIMIT 1")
-    fun get(id: String): Flow<Transaction>
+    fun get(id: String): Flow<DetailedTransaction>
 
     @androidx.room.Transaction
     @Query("SELECT * FROM transactions ORDER BY date DESC")
-    fun get(): Flow<List<Transaction>>
+    fun get(): Flow<List<DetailedTransaction>>
 
     @androidx.room.Transaction
     @Query("SELECT * FROM transactions WHERE accountId = :accountId ORDER BY date DESC")
-    fun getByAccount(accountId: String): Flow<List<Transaction>>
+    fun getByAccount(accountId: String): Flow<List<DetailedTransaction>>
 
     @androidx.room.Transaction
     @Query("SELECT * FROM transactions WHERE categoryId IN (:categoryIds) ORDER BY date DESC")
-    fun getByCategory(categoryIds: List<Int>): Flow<List<Transaction>>
+    fun getByCategory(categoryIds: List<Int>): Flow<List<DetailedTransaction>>
 }
 
 @Dao
@@ -133,24 +132,6 @@ interface AccountDao {
 
     @Query("SELECT * from accounts LIMIT 1")
     fun getFirst(): Flow<AccountEntity?>
-}
-
-@Dao
-interface TransactionTemplateDao {
-    @Insert
-    suspend fun insert(template: TransactionTemplate)
-
-    @Update
-    suspend fun update(template: TransactionTemplate)
-
-    @Delete
-    suspend fun delete(template: TransactionTemplate)
-
-    @Query("SELECT * from templates WHERE id = :id")
-    fun get(id: String): Flow<TransactionTemplate>
-
-    @Query("SELECT * from templates")
-    fun get(): Flow<List<TransactionTemplate>>
 }
 
 @Dao

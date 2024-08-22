@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.unghostdude.budjet.R
+import com.unghostdude.budjet.contract.TransactionRepository
 import com.unghostdude.budjet.dataStore
 import com.unghostdude.budjet.model.AccountEntity
 import com.unghostdude.budjet.model.Account
@@ -15,43 +16,30 @@ import com.unghostdude.budjet.model.BudgetCategoryEntity
 import com.unghostdude.budjet.model.Budget
 import com.unghostdude.budjet.model.CategoryEntity
 import com.unghostdude.budjet.model.TransactionEntity
-import com.unghostdude.budjet.model.TransactionTemplate
+import com.unghostdude.budjet.model.DetailedTransaction
 import com.unghostdude.budjet.model.Transaction
+import com.unghostdude.budjet.model.TransactionForCreation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.UUID
 
-class RoomTransactionRepository(private val dao: TransactionDao) :
-    TransactionRepository {
-    override suspend fun insert(transaction: TransactionEntity) = dao.insert(transaction)
-    override suspend fun update(transaction: TransactionEntity) = dao.update(transaction)
-    override suspend fun delete(transaction: TransactionEntity) = dao.delete(transaction)
-    override fun get(id: String): Flow<Transaction> = dao.get(id)
-    override fun get(): Flow<List<Transaction>> = dao.get()
-    override fun getWithAccountId(accountId: String): Flow<List<Transaction>> = dao.getByAccount(accountId)
-    override fun getWithCategoryId(categoryIds: List<Int>): Flow<List<Transaction>> = dao.getByCategory(categoryIds)
-}
 
-class RoomTemplateRepository(private val dao: TransactionTemplateDao) :
-    TransactionTemplateRepository {
-    override suspend fun insert(template: TransactionTemplate) = dao.insert(template)
-    override suspend fun update(template: TransactionTemplate) = dao.update(template)
-    override suspend fun delete(template: TransactionTemplate) = dao.delete(template)
-    override fun get(id: String): Flow<TransactionTemplate> = dao.get(id)
-    override fun get(): Flow<List<TransactionTemplate>> = dao.get()
-}
 
 class RoomAccountRepository(private val dao: AccountDao) :
     AccountRepository {
     override suspend fun insert(account: AccountEntity) = dao.insert(account)
-    override suspend fun update(account: AccountEntity){
+    override suspend fun update(account: AccountEntity) {
         dao.update(account)
         dao.updateTransactionCurrency(account.id.toString())
     }
-    override suspend fun delete(account: AccountEntity){
+
+    override suspend fun delete(account: AccountEntity) {
         dao.delete(account)
         dao.deleteTransactions(account.id.toString())
     }
+
     override fun get(id: UUID): Flow<AccountEntity> = dao.get(id.toString())
     override fun getWithBalance(id: UUID): Flow<Account> = dao.getWithBalance(id.toString())
     override fun getWithBalance(): Flow<List<Account>> = dao.getWithBalance()
@@ -63,9 +51,13 @@ class RoomBudgetRepository(private val dao: BudgetDao) :
     BudgetRepository {
     override suspend fun insert(budget: BudgetEntity) = dao.insert(budget)
     override suspend fun insert(items: List<BudgetCategoryEntity>) = dao.insert(items)
-    override suspend fun insert(budget: BudgetEntity, categoryIds: List<Int>) = dao.insert(budget, categoryIds)
+    override suspend fun insert(budget: BudgetEntity, categoryIds: List<Int>) =
+        dao.insert(budget, categoryIds)
+
     override suspend fun update(budget: BudgetEntity) = dao.update(budget)
-    override suspend fun update(budget: BudgetEntity, categoryIds: List<Int>) = dao.update(budget, categoryIds)
+    override suspend fun update(budget: BudgetEntity, categoryIds: List<Int>) =
+        dao.update(budget, categoryIds)
+
     override suspend fun delete(budget: BudgetEntity) = dao.delete(budget)
     override fun get(id: String): Flow<Budget> = dao.get(id)
     override fun get(): Flow<List<Budget>> = dao.get()

@@ -2,11 +2,9 @@ package com.unghostdude.budjet.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.unghostdude.budjet.contract.TransactionRepository
 import com.unghostdude.budjet.data.AppSettingRepository
-import com.unghostdude.budjet.data.TransactionRepository
 import com.unghostdude.budjet.model.AppTheme
-import com.unghostdude.budjet.utilities.FormControl
-import com.unghostdude.budjet.utilities.Validators
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -79,8 +77,8 @@ class SettingScreenViewModel @Inject constructor(
 
                 val file = File(dir, filename)
 
-                val transactions = transactionRepository.get().firstOrNull()?.map { t ->
-                    "${dateFormatter.format(t.transaction.date)}, ${t.account.name}, ${t.transaction.title}, ${t.transaction.amount}, ${t.transaction.type}, ${t.transaction.currency.currencyCode}"
+                val transactions = transactionRepository.get().firstOrNull()?.map { transaction ->
+                    "${dateFormatter.format(transaction.date)}, ${transaction.account.name}, ${transaction.title}, ${transaction.amount}, ${transaction.type}, ${transaction.currency.currencyCode}"
                 } ?: listOf()
 
                 file.createNewFile()

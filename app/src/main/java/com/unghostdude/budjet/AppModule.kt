@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import androidx.room.Room
 import androidx.room.RoomDatabase.Callback
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.unghostdude.budjet.contract.TransactionRepository
 import com.unghostdude.budjet.data.AccountRepository
 import com.unghostdude.budjet.data.AnalyticRepository
 import com.unghostdude.budjet.data.AppSettingRepository
@@ -16,8 +17,7 @@ import com.unghostdude.budjet.data.RoomAccountRepository
 import com.unghostdude.budjet.data.RoomAnalyticRepository
 import com.unghostdude.budjet.data.RoomBudgetRepository
 import com.unghostdude.budjet.data.RoomCategoryRepository
-import com.unghostdude.budjet.data.RoomTransactionRepository
-import com.unghostdude.budjet.data.TransactionRepository
+import com.unghostdude.budjet.implementation.RoomTransactionRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +25,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.io.File
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.concurrent.Executors
 import javax.inject.Singleton
 

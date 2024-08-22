@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unghostdude.budjet.R
+import com.unghostdude.budjet.model.TransactionForUpdate
 import com.unghostdude.budjet.model.TransactionType
 import com.unghostdude.budjet.utilities.FormControl
 import com.unghostdude.budjet.viewmodel.transaction.TransactionDetailViewModel
@@ -91,7 +92,7 @@ fun TransactionDetailScreen(
     val categories by vm.categories.collectAsState()
     val accounts by vm.accounts.collectAsState()
 
-    LaunchedEffect(transactionId) {
+    LaunchedEffect(Unit) {
         vm.fetch(transactionId)
     }
 
@@ -105,27 +106,22 @@ fun TransactionDetailScreen(
             mutableStateOf(transaction!!.category)
         }
         var transactionType by remember {
-            mutableStateOf(transaction!!.transaction.type)
+            mutableStateOf(transaction!!.type)
         }
         var date by remember {
-            mutableStateOf(
-                LocalDateTime.ofInstant(
-                    transaction!!.transaction.date,
-                    ZoneId.systemDefault()
-                )
-            )
+            mutableStateOf(transaction!!.date)
         }
         var amount by remember {
-            mutableDoubleStateOf(transaction!!.transaction.amount)
+            mutableDoubleStateOf(transaction!!.amount)
         }
         var amountText by remember {
             mutableStateOf(amount.toString())
         }
         var note by remember {
-            mutableStateOf(FormControl(initialValue = transaction!!.transaction.note))
+            mutableStateOf(FormControl(initialValue = transaction!!.note))
         }
         var title by remember {
-            mutableStateOf(FormControl(initialValue = transaction!!.transaction.title))
+            mutableStateOf(FormControl(initialValue = transaction!!.title))
         }
 
         Scaffold(
@@ -146,14 +142,17 @@ fun TransactionDetailScreen(
                         IconButton(
                             onClick = {
                                 vm.update(
-                                    transactionEntity = transaction!!.transaction.copy(
+                                    TransactionForUpdate(
+                                        id = transaction!!.id,
+                                        account = account,
+                                        destinationAccount = null,
+                                        type = transactionType,
+                                        amount = amount,
                                         title = title.currentValue,
                                         note = note.currentValue,
-                                        amount = amount,
-                                        date = date.atZone(ZoneOffset.UTC).toInstant(),
-                                        type = transactionType,
-                                        categoryId = category.id,
-                                        accountId = account.id
+                                        category = category,
+                                        date = date,
+                                        dueDate = null
                                     ),
                                     callback = navigateAway
                                 )
@@ -318,8 +317,7 @@ fun TransactionDetailScreen(
 
                         if (dialog == CreateTransactionScreenDialog.Date) {
                             val dps = rememberDatePickerState(
-                                initialSelectedDateMillis = date.toInstant(ZoneOffset.UTC)
-                                    .toEpochMilli(),
+                                initialSelectedDateMillis = date.toInstant().toEpochMilli(),
                                 initialDisplayMode = DisplayMode.Input
                             )
 

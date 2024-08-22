@@ -11,11 +11,9 @@ sealed class Screen(
     data object Settings : Screen("settings", "Settings")
     data object UsernameSetup : Screen("username", "Settings")
 
-    data object Transaction : Screen("transactions", "Transactions")
+    data object Transactions : Screen("transactions", "Transactions")
     data object TransactionCreation : Screen("transaction/create", "Transaction")
     data object TransactionDetail : Screen("transactions/{id}", "Transactions")
-
-    data object Templates : Screen("templates", "Templates")
 
     data object Budget : Screen("budgets", "Budgets")
     data object BudgetCreation : Screen("budgets/create", "Budget")

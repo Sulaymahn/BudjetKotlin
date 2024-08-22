@@ -2,8 +2,8 @@ package com.unghostdude.budjet.viewmodel.transaction
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.unghostdude.budjet.contract.TransactionRepository
 import com.unghostdude.budjet.data.AppSettingRepository
-import com.unghostdude.budjet.data.TransactionRepository
 import com.unghostdude.budjet.model.Transaction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
-import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,16 +22,16 @@ class TransactionsScreenViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val transactions = transactionRepository.get().flatMapLatest { transactions ->
-        val map = transactions.groupBy { transaction ->
-            transaction.transaction.date.atZone(ZoneId.systemDefault()).toLocalDate()
+        val group = transactions.groupBy { transaction ->
+            transaction.date.toLocalDate()
         }
 
         val res = mutableListOf<TransactionGroup>()
-        for (a in map) {
+        for (pair in group) {
             res.add(
                 TransactionGroup(
-                    date = a.key,
-                    transactions = a.value
+                    date = pair.key,
+                    transactions = pair.value
                 )
             )
         }

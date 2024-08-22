@@ -2,11 +2,10 @@ package com.unghostdude.budjet.viewmodel.transaction
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.unghostdude.budjet.contract.TransactionRepository
 import com.unghostdude.budjet.data.AccountRepository
 import com.unghostdude.budjet.data.CategoryRepository
-import com.unghostdude.budjet.data.TransactionRepository
-import com.unghostdude.budjet.model.TransactionEntity
+import com.unghostdude.budjet.model.TransactionForUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +14,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,10 +27,11 @@ class TransactionDetailViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val transaction = fetching.flatMapLatest { id ->
-        if (id == null) {
+        try {
+            val tId = UUID.fromString(id)
+            transactionRepository.get(tId)
+        } catch (e: Exception) {
             flowOf(null)
-        } else {
-            transactionRepository.get(id)
         }
     }.stateIn(
         viewModelScope,
@@ -58,9 +59,9 @@ class TransactionDetailViewModel @Inject constructor(
         }
     }
 
-    fun update(transactionEntity: TransactionEntity, callback: () -> Unit){
+    fun update(transaction: TransactionForUpdate, callback: () -> Unit) {
         viewModelScope.launch {
-            transactionRepository.update(transactionEntity)
+            transactionRepository.update(transaction)
             callback()
         }
     }

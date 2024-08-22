@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     kapt(libs.androidx.room.compiler)
 
+    implementation(libs.vico.compose)
     implementation(libs.vico.compose.m3)
 
     implementation(libs.androidx.material3.android)

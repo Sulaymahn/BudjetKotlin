@@ -270,8 +270,7 @@ fun CreateTransactionScreen(
 
                     if (dialog == CreateTransactionScreenDialog.Date) {
                         val dps = rememberDatePickerState(
-                            initialSelectedDateMillis = vm.date.toInstant(ZoneOffset.UTC)
-                                .toEpochMilli(),
+                            initialSelectedDateMillis = vm.date.toInstant().toEpochMilli(),
                             initialDisplayMode = DisplayMode.Input
                         )
 

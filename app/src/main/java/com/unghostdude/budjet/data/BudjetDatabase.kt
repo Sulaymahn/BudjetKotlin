@@ -9,7 +9,6 @@ import com.unghostdude.budjet.model.BudgetEntity
 import com.unghostdude.budjet.model.BudgetCategoryEntity
 import com.unghostdude.budjet.model.CategoryEntity
 import com.unghostdude.budjet.model.TransactionEntity
-import com.unghostdude.budjet.model.TransactionTemplate
 import java.time.Instant
 import java.util.Currency
 import java.util.UUID
@@ -24,7 +23,7 @@ class Converters {
     fun currencyToString(value: Currency): String {
         return value.currencyCode
     }
-    
+
     @TypeConverter
     fun stringToUuid(value: String?): UUID? {
         return try {
@@ -53,7 +52,6 @@ class Converters {
 @Database(
     entities = [
         TransactionEntity::class,
-        TransactionTemplate::class,
         AccountEntity::class,
         BudgetEntity::class,
         CategoryEntity::class,
@@ -65,7 +63,6 @@ class Converters {
 @TypeConverters(Converters::class)
 abstract class BudjetDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
-    abstract fun templateDao(): TransactionTemplateDao
     abstract fun budgetDao(): BudgetDao
     abstract fun accountDao(): AccountDao
     abstract fun categoryDao(): CategoryDao
