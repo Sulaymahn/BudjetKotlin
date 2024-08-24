@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "609001490310",
+    "project_id": "budjet-4ce7c",
+    "storage_bucket": "budjet-4ce7c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:609001490310:android:15bcd35301182c4e064e07",
+        "android_client_info": {
+          "package_name": "com.unghostdude.budjet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "609001490310-jbkqpg1lgorgf15nvnliuh28l5j9nqbe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwxNFsSUi1y0ESkFgxnlQWYVzmz3E7Nt8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "609001490310-jbkqpg1lgorgf15nvnliuh28l5j9nqbe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

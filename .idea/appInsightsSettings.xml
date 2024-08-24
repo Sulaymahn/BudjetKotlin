@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.unghostdude.budjet" />
+                  <option name="mobileSdkAppId" value="1:609001490310:android:15bcd35301182c4e064e07" />
+                  <option name="projectId" value="budjet-4ce7c" />
+                  <option name="projectNumber" value="609001490310" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

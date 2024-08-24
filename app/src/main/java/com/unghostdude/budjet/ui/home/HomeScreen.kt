@@ -52,7 +52,6 @@ import com.unghostdude.budjet.viewmodel.HomeScreenViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    account: AccountEntity,
     username: String,
     navigateToBudgetDetail: (String) -> Unit,
     navigateToSettings: () -> Unit,
@@ -64,17 +63,12 @@ fun HomeScreen(
 ) {
     val navController = rememberNavController()
     val navState = navController.currentBackStackEntryAsState()
-    val accounts by vm.accounts.collectAsState()
 
     val currentScreen = when (navState.value?.destination?.route) {
         Screen.Budget.route -> Screen.Budget
         Screen.Transactions.route -> Screen.Transactions
         Screen.Analytic.route -> Screen.Analytic
         else -> Screen.Dashboard
-    }
-
-    var showAccountModal by remember {
-        mutableStateOf(false)
     }
 
     Scaffold(
@@ -243,10 +237,7 @@ fun HomeScreen(
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
                     username = username,
-                    navigateToAccountScreen = navigateToAccountScreen,
-                    navigateToSwitchSelectedAccount = {
-                        showAccountModal = true
-                    }
+                    navigateToAccountScreen = navigateToAccountScreen
                 )
             }
 
@@ -264,61 +255,6 @@ fun HomeScreen(
                 BudgetScreen(
                     navigateToBudgetDetail = navigateToBudgetDetail
                 )
-            }
-        }
-
-        if (showAccountModal) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    showAccountModal = false
-                }
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Selected Account",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                repeat(accounts.size) {
-                    ListItem(
-                        headlineContent = {
-                            Text(text = accounts[it].name)
-                        },
-                        supportingContent = {
-                            Text(text = accounts[it].currency.displayName)
-                        },
-                        trailingContent = {
-                            if (accounts[it].id == account.id) {
-                                Text(text = "active")
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                if (account.id != accounts[it].id) {
-                                    vm.switchAccount(accounts[it])
-                                }
-
-                                showAccountModal = false
-                            }
-                    )
-                }
-
-
-                Spacer(modifier = Modifier.height(80.dp))
             }
         }
     }

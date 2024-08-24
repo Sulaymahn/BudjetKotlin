@@ -15,5 +15,5 @@ interface TransactionRepository {
     fun get(): Flow<List<Transaction>>
     fun getByAccount(accountId: UUID): Flow<List<Transaction>>
     fun getByCategory(categoryIds: List<Int>): Flow<List<Transaction>>
-    fun getByDateRange(range: TimeRange) : Flow<List<Transaction>>
+    fun getByDateRange(range: TimeRange, accountId: UUID) : Flow<List<Transaction>>
 }

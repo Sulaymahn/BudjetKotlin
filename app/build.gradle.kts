@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("dagger.hilt.android.plugin")
+    id("com.google.gms.google-services")
     kotlin("kapt")
 }
 
@@ -75,6 +76,9 @@ dependencies {
     implementation(libs.androidx.sqlite.ktx)
     implementation(libs.androidx.datastore.preferences)
     kapt(libs.androidx.room.compiler)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
 
     implementation(libs.vico.compose)
     implementation(libs.vico.compose.m3)

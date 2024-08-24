@@ -60,7 +60,6 @@ fun MainNavigator(
                     }
                 } else {
                     HomeScreen(
-                        account = uiState.account,
                         username = uiState.username,
                         navigateToSettings = {
                             navController.navigate(Screen.Settings.route)

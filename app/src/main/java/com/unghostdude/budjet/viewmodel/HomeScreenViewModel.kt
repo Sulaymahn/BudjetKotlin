@@ -14,19 +14,4 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val accountRepo: AccountRepository,
-    private val userRepo: AppSettingRepository,
-    private val transactionRepository: TransactionRepository
-) : ViewModel() {
-    val accounts = accountRepo.get().stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000L),
-        listOf()
-    )
-
-    fun switchAccount(account: AccountEntity) {
-        viewModelScope.launch {
-            userRepo.setActiveAccount(account.id)
-        }
-    }
-}
+) : ViewModel()

@@ -89,29 +89,40 @@ class RoomTransactionRepository(private val dao: TransactionDao) :
         }
     }
 
-    override fun getByDateRange(range: TimeRange): Flow<List<Transaction>> {
-        return dao.get().map { transactions ->
+    override fun getByDateRange(range: TimeRange, accountId: UUID): Flow<List<Transaction>> {
+        return dao.getByAccount(accountId.toString()).map { transactions ->
             toTransactions(transactions).filter { transaction ->
                 val now = LocalDateTime.now().atZone(ZoneId.systemDefault())
 
                 when (range) {
                     TimeRange.ALL_TIME -> true
                     TimeRange.TODAY -> transaction.date.toLocalDate().isEqual(now.toLocalDate())
-                    TimeRange.YESTERDAY -> transaction.date.toLocalDate().isEqual(now.minusDays(1).toLocalDate())
+                    TimeRange.YESTERDAY -> transaction.date.toLocalDate()
+                        .isEqual(now.minusDays(1).toLocalDate())
+
                     TimeRange.THIS_WEEK -> {
-                        val startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                        val startOfWeek =
+                            now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
                         val endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-                        transaction.date.isAfter(startOfWeek.minusSeconds(1)) && transaction.date.isBefore(endOfWeek.plusSeconds(1))
+                        transaction.date.isAfter(startOfWeek.minusSeconds(1)) && transaction.date.isBefore(
+                            endOfWeek.plusSeconds(1)
+                        )
                     }
+
                     TimeRange.THIS_MONTH -> {
                         val startOfMonth = now.withDayOfMonth(1)
                         val endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth())
-                        transaction.date.isAfter(startOfMonth.minusSeconds(1)) && transaction.date.isBefore(endOfMonth.plusSeconds(1))
+                        transaction.date.isAfter(startOfMonth.minusSeconds(1)) && transaction.date.isBefore(
+                            endOfMonth.plusSeconds(1)
+                        )
                     }
+
                     TimeRange.THIS_YEAR -> {
                         val startOfYear = now.withDayOfYear(1)
                         val endOfYear = now.with(TemporalAdjusters.lastDayOfYear())
-                        transaction.date.isAfter(startOfYear.minusSeconds(1)) && transaction.date.isBefore(endOfYear.plusSeconds(1))
+                        transaction.date.isAfter(startOfYear.minusSeconds(1)) && transaction.date.isBefore(
+                            endOfYear.plusSeconds(1)
+                        )
                     }
                 }
             }
